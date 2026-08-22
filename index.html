@@ -5,13 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>แอปบันทึกรายรับ-รายจ่าย</title>
     
-    <!-- เชื่อมโยงไฟล์ Manifest สำหรับเว็บแอปและมือถือ -->
-    <link rel="manifest" href="./manifest.json">
-    
-    <!-- ไอคอนเว็บและมือถือ -->
-    <link rel="icon" type="image/x-icon" href="./favicon.ico">
-    <link rel="apple-touch-icon" href="./icon-192.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+    <!-- ลิงก์เชื่อมโยงไอคอนเบราว์เซอร์และมือถือแบบโปรเจกต์เก่าที่ใช้งานได้ -->
+    <link rel="icon" type="image/png" href="icon.png">
+    <link rel="apple-touch-icon" href="icon.png">
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -375,7 +371,7 @@
                 noDataEl.classList.remove('hidden');
             } else {
                 noDataEl.classList.add('hidden');
-                filteredTransactions.sort((a, b) => new Date(b.date) - new Date(b.date) || b.id - id);
+                filteredTransactions.sort((a, b) => new Date(b.date) - new Date(a.date) || b.id - a.id);
 
                 filteredTransactions.forEach(t => {
                     const row = document.createElement('tr');
