@@ -17,7 +17,7 @@
         <!-- หัวข้อแอป -->
         <header class="text-center mb-8">
             <h1 class="text-3xl font-bold text-indigo-600">💰 บันทึกรายรับ - รายจ่าย</h1>
-            <p class="text-gray-500 text-sm mt-1">จัดการบัญชีแยกกระเป๋าเงินสดและบัญชีธนาคารประจำเดือน</p>
+            <p class="text-gray-500 text-sm mt-1">จัดการบัญชีแยกกระเป๋าเงินสดและบัญชีธนาคาร พร้อมสรุปยอดรายวัน</p>
         </header>
 
         <!-- ส่วนสรุปยอด (Dashboard Cards) -->
@@ -66,8 +66,8 @@
                     <input type="text" id="description" required placeholder="เช่น เงินเดือน, ค่าข้าว, ค่าเดินทาง" class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-400 outline-none">
                 </div>
                 <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">เดือน/ปี</label>
-                    <input type="month" id="monthFilterInput" class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-400 outline-none">
+                    <label class="block text-xs font-medium text-gray-600 mb-1">วันที่ทำรายการ</label>
+                    <input type="date" id="dateInput" class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-400 outline-none" required>
                 </div>
                 <div class="sm:col-span-full">
                     <button type="submit" class="w-full bg-indigo-600 text-white font-medium py-2.5 rounded-lg hover:bg-indigo-700 transition shadow-md">
@@ -75,6 +75,14 @@
                     </button>
                 </div>
             </form>
+        </div>
+
+        <!-- ส่วนสรุปรายจ่ายรายวันในเดือนที่เลือก -->
+        <div class="bg-white p-6 rounded-2xl shadow mb-8 border border-gray-100">
+            <h3 class="text-lg font-semibold text-gray-700 mb-3">📅 สรุปยอดใช้จ่ายรายวัน (ในเดือนที่เลือก)</h3>
+            <div id="dailySummaryContainer" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
+                <!-- ข้อมูลสรุปรายวันจะแสดงที่นี่ -->
+            </div>
         </div>
 
         <!-- รายการประวัติประจำเดือน -->
@@ -92,7 +100,7 @@
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="border-b text-xs text-gray-400 uppercase tracking-wider">
-                            <th class="py-3 px-2">เดือน/ปี</th>
+                            <th class="py-3 px-2">วันที่</th>
                             <th class="py-3 px-2">แหล่งเงิน</th>
                             <th class="py-3 px-2">รายการ</th>
                             <th class="py-3 px-2 text-right">จำนวนเงิน</th>
@@ -110,7 +118,6 @@
 
     <!-- ส่วน Script ควบคุมการทำงาน -->
     <script>
-        // โหลดข้อมูลจาก LocalStorage หรือกำหนดเป็นอาเรย์ว่าง
         let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
 
         const form = document.getElementById('transactionForm');
@@ -119,16 +126,21 @@
         const cashBalanceEl = document.getElementById('cashBalance');
         const bankBalanceEl = document.getElementById('bankBalance');
         const filterMonthEl = document.getElementById('filterMonth');
-        const monthFilterInput = document.getElementById('monthFilterInput');
+        const dateInput = document.getElementById('dateInput');
         const noDataEl = document.getElementById('noData');
+        const dailySummaryContainer = document.getElementById('dailySummaryContainer');
 
-        // ตั้งค่าช่องเลือกเดือนให้เป็นเดือนปัจจุบันโดยอัตโนมัติ
+        // ตั้งค่าวันที่เริ่มต้นในฟอร์มให้เป็นวันปัจจุบัน (รูปแบบ YYYY-MM-DD)
         const today = new Date();
-        const currentYearMonth = today.toISOString().slice(0, 7);
-        filterMonthEl.value = currentYearMonth;
-        monthFilterInput.value = currentYearMonth;
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        
+        const currentDateStr = `${year}-${month}-${day}`;
+        dateInput.value = currentDateStr;
+        filterMonthEl.value = `${year}-${month}`;
 
-        // เมื่อมีการส่งฟอร์มเพิ่มข้อมูล
+        // เมื่อกดบันทึกข้อมูล
         form.addEventListener('submit', function(e) {
             e.preventDefault();
 
@@ -136,7 +148,8 @@
             const account = document.getElementById('account').value;
             const amount = parseFloat(document.getElementById('amount').value);
             const description = document.getElementById('description').value;
-            const month = monthFilterInput.value;
+            const date = dateInput.value; // รูปแบบ YYYY-MM-DD
+            const transactionMonth = date.slice(0, 7); // ตัดเอาเฉพาะ YYYY-MM สำหรับกรองเดือน
 
             const newTransaction = {
                 id: Date.now(),
@@ -144,13 +157,14 @@
                 account,
                 amount,
                 description,
-                month
+                date,
+                month: transactionMonth
             };
 
             transactions.push(newTransaction);
             saveAndRender();
             form.reset();
-            monthFilterInput.value = currentYearMonth; // คงค่าเดือนปัจจุบันไว้หลังรีเซ็ตฟอร์ม
+            dateInput.value = currentDateStr; // คงค่าวันปัจจุบันไว้
         });
 
         // ฟังก์ชันลบรายการ
@@ -165,14 +179,22 @@
             render();
         }
 
+        // แปลงรูปแบบวันที่ให้อ่านง่าย เช่น 2026-08-22 เป็น 22 ส.ค. 69
+        function formatDateThai(dateStr) {
+            if (!dateStr) return '';
+            const [y, m, d] = dateStr.split('-');
+            const months = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
+            return `${parseInt(d)} ${months[parseInt(m) - 1]} ${parseInt(y) + 543}`;
+        }
+
         // ฟังก์ชันประมวลผลและแสดงผลข้อมูล
         function render() {
             const selectedMonth = filterMonthEl.value;
             
-            // คำนวณยอดรวมภาพรวมทั้งหมด (คิดจากทุกเดือนที่มีการบันทึก)
             let totalCash = 0;
             let totalBank = 0;
 
+            // คำนวณยอดเงินรวมทั้งหมดทุกกระเป๋า
             transactions.forEach(t => {
                 const val = t.type === 'income' ? t.amount : -t.amount;
                 if (t.account === 'cash') totalCash += val;
@@ -181,19 +203,49 @@
 
             const grandTotal = totalCash + totalBank;
 
-            // อัปเดต UI ยอดรวม
+            // อัปเดต UI ยอดรวมภาพรวม
             totalBalanceEl.innerText = grandTotal.toLocaleString('th-TH', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' ฿';
             cashBalanceEl.innerText = totalCash.toLocaleString('th-TH', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' ฿';
             bankBalanceEl.innerText = totalBank.toLocaleString('th-TH', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' ฿';
 
-            // กรองข้อมูลเฉพาะเดือนที่เลือกมาแสดงในตาราง
+            // กรองข้อมูลเฉพาะเดือนที่เลือก
             const filteredTransactions = transactions.filter(t => t.month === selectedMonth);
 
+            // --- คำนวณรายจ่ายรายวันเฉพาะในเดือนที่เลือก ---
+            let dailyExpenses = {};
+            filteredTransactions.forEach(t => {
+                if (t.type === 'expense') {
+                    dailyExpenses[t.date] = (dailyExpenses[t.date] || 0) + t.amount;
+                }
+            });
+
+            // แสดงผลกล่องสรุปรายวัน
+            dailySummaryContainer.innerHTML = '';
+            const sortedDates = Object.keys(dailyExpenses).sort();
+            
+            if (sortedDates.length === 0) {
+                dailySummaryContainer.innerHTML = `<p class="text-xs text-gray-400 col-span-full">ยังไม่มีรายจ่ายในเดือนนี้</p>`;
+            } else {
+                sortedDates.forEach(date => {
+                    const box = document.createElement('div');
+                    box.className = "bg-gray-50 border border-gray-100 p-3 rounded-xl text-center shadow-sm";
+                    box.innerHTML = `
+                        <p class="text-xs text-gray-500 font-medium">${formatDateThai(date)}</p>
+                        <p class="text-sm font-bold text-rose-500 mt-1">${dailyExpenses[date].toLocaleString('th-TH', {minimumFractionDigits: 2})} ฿</p>
+                    `;
+                    dailySummaryContainer.appendChild(box);
+                });
+            }
+
+            // แสดงตารางประวัติ
             transactionList.innerHTML = '';
             if (filteredTransactions.length === 0) {
                 noDataEl.classList.remove('hidden');
             } else {
                 noDataEl.classList.add('hidden');
+                // เรียงลำดับจากวันที่ล่าสุดไปเก่าสุด
+                filteredTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
+
                 filteredTransactions.forEach(t => {
                     const row = document.createElement('tr');
                     row.className = "hover:bg-gray-50 transition";
@@ -204,7 +256,7 @@
                     const accountText = t.account === 'cash' ? '💵 เงินสด' : '🏦 ธนาคาร';
 
                     row.innerHTML = `
-                        <td class="py-3 px-2 text-gray-500 text-xs">${t.month}</td>
+                        <td class="py-3 px-2 text-gray-500 text-xs">${formatDateThai(t.date)}</td>
                         <td class="py-3 px-2 text-xs font-medium">${accountText}</td>
                         <td class="py-3 px-2">${t.description}</td>
                         <td class="py-3 px-2 text-right ${amountClass}">${amountSign}${t.amount.toLocaleString('th-TH', {minimumFractionDigits: 2})} ฿</td>
@@ -217,10 +269,7 @@
             }
         }
 
-        // เมื่อเปลี่ยนเดือนที่ต้องการดูในตาราง
         filterMonthEl.addEventListener('change', render);
-
-        // โหลดแสดงผลครั้งแรก
         render();
     </script>
 </body>
