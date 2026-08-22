@@ -3,16 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>แอปบันทึกรายรับ-รายจ่าย (เงินสด & ธนาคาร)</title>
+    <title>แอปบันทึกรายรับ-รายจ่าย</title>
     
-    <!-- ไอคอนสำหรับคอมพิวเตอร์และเบราว์เซอร์ทั่วไป -->
+    <!-- ไอคอนเว็บและมือถือ -->
     <link rel="icon" type="image/x-icon" href="./favicon.ico">
-
-    <!-- ไอคอนสำหรับมือถือ (แสดงเวลาเพิ่มไปยังหน้าจอหลัก) -->
     <link rel="apple-touch-icon" href="./icon-192.png">
     <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
 
-    <!-- Tailwind CSS สำหรับตกแต่งดีไซน์ -->
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -143,10 +141,10 @@
         <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl max-h-[90vh] overflow-y-auto">
             <h3 class="text-lg font-bold text-gray-800 mb-4">⚙️ จัดการปุ่มลัดรายการที่ใช้บ่อย</h3>
             <div id="presetEditorList" class="space-y-3 mb-4"></div>
-            <button onclick="addNewPresetField()" class="w-full border border-dashed border-indigo-400 text-indigo-600 py-2 rounded-lg text-sm mb-4 hover:bg-indigo-50 transition">+ เพิ่มปุ่มลัดใหม่</button>
+            <button type="button" onclick="addNewPresetField()" class="w-full border border-dashed border-indigo-400 text-indigo-600 py-2 rounded-lg text-sm mb-4 hover:bg-indigo-50 transition">+ เพิ่มปุ่มลัดใหม่</button>
             <div class="flex justify-end gap-2">
-                <button onclick="closeSettingsModal()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm">ยกเลิก</button>
-                <button onclick="savePresets()" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm">บันทึกการตั้งค่า</button>
+                <button type="button" onclick="closeSettingsModal()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm">ยกเลิก</button>
+                <button type="button" onclick="savePresets()" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm">บันทึกการตั้งค่า</button>
             </div>
         </div>
     </div>
@@ -218,8 +216,8 @@
         function openSettingsModal() {
             const editorList = document.getElementById('presetEditorList');
             editorList.innerHTML = '';
-            quickPresets.forEach((p, i) => {
-                editorList.appendChild(createPresetRow(p, i));
+            quickPresets.forEach((p) => {
+                editorList.appendChild(createPresetRow(p));
             });
             document.getElementById('settingsModal').classList.remove('hidden');
         }
@@ -369,4 +367,40 @@
                 });
             }
 
-            transactionList.innerHTML = '
+            transactionList.innerHTML = '';
+            if (filteredTransactions.length === 0) {
+                noDataEl.classList.remove('hidden');
+            } else {
+                noDataEl.classList.add('hidden');
+                filteredTransactions.sort((a, b) => new Date(b.date) - new Date(b.date) || b.id - a.id);
+
+                filteredTransactions.forEach(t => {
+                    const row = document.createElement('tr');
+                    row.className = "hover:bg-gray-50 transition";
+                    
+                    const isIncome = t.type === 'income';
+                    const amountClass = isIncome ? 'text-emerald-600 font-medium' : 'text-rose-500 font-medium';
+                    const amountSign = isIncome ? '+' : '-';
+                    const accountText = t.account === 'cash' ? '💵 เงินสด' : '🏦 ธนาคาร';
+
+                    row.innerHTML = `
+                        <td class="py-3 px-2 text-gray-500 text-xs">${formatDateThai(t.date)}</td>
+                        <td class="py-3 px-2 text-xs font-medium">${accountText}</td>
+                        <td class="py-3 px-2">${t.description}</td>
+                        <td class="py-3 px-2 text-right ${amountClass}">${amountSign}${t.amount.toLocaleString('th-TH', {minimumFractionDigits: 2})} ฿</td>
+                        <td class="py-3 px-2 text-center">
+                            <button onclick="deleteTransaction(${t.id})" class="text-gray-400 hover:text-rose-600 transition text-xs bg-gray-100 hover:bg-rose-50 px-2 py-1 rounded">ลบ</button>
+                        </td>
+                    `;
+                    transactionList.appendChild(row);
+                });
+            }
+        }
+
+        filterMonthEl.addEventListener('change', render);
+        renderQuickPresets();
+        updateSuggestions();
+        render();
+    </script>
+</body>
+</html>
