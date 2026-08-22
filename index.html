@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>แอปบันทึกรายรับ-รายจ่าย (ปรับแต่งปุ่มลัดได้)</title>
+    <title>แอปบันทึกรายรับ-รายจ่าย (เงินสด & ธนาคาร)</title>
+    
+    <!-- โค้ดเรียกใช้งานไอคอนเว็บ (Favicon) -->
+    <link rel="icon" type="image/x-icon" href="./favicon.ico">
+
     <!-- Tailwind CSS สำหรับตกแต่งดีไซน์ -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -45,7 +49,7 @@
                 </button>
             </div>
             
-            <!-- ปุ่มลัดรายการยอดฮิต (สร้างจากข้อมูลที่ตั้งค่าไว้) -->
+            <!-- ปุ่มลัดรายการยอดฮิต -->
             <div class="mb-4">
                 <label class="block text-xs font-medium text-gray-400 mb-2">⚡ ปุ่มลัดด่วน:</label>
                 <div id="quickPresetsContainer" class="flex flex-wrap gap-2">
@@ -134,9 +138,7 @@
     <div id="settingsModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl max-h-[90vh] overflow-y-auto">
             <h3 class="text-lg font-bold text-gray-800 mb-4">⚙️ จัดการปุ่มลัดรายการที่ใช้บ่อย</h3>
-            <div id="presetEditorList" class="space-y-3 mb-4">
-                <!-- รายการฟอร์มแก้ไขปุ่มลัดแต่ละปุ่ม -->
-            </div>
+            <div id="presetEditorList" class="space-y-3 mb-4"></div>
             <button onclick="addNewPresetField()" class="w-full border border-dashed border-indigo-400 text-indigo-600 py-2 rounded-lg text-sm mb-4 hover:bg-indigo-50 transition">+ เพิ่มปุ่มลัดใหม่</button>
             <div class="flex justify-end gap-2">
                 <button onclick="closeSettingsModal()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm">ยกเลิก</button>
@@ -148,7 +150,6 @@
     <script>
         let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
         
-        // ค่าเริ่มต้นปุ่มลัด (ถ้ายังไม่เคยตั้งค่า)
         let defaultPresets = [
             { name: "ค่าข้าว", amount: 60, type: "expense", account: "cash" },
             { name: "ค่ากาแฟ", amount: 50, type: "expense", account: "cash" },
@@ -181,10 +182,9 @@
         dateInput.value = currentDateStr;
         filterMonthEl.value = `${year}-${month}`;
 
-        // เรนเดอร์ปุ่มลัดออกหน้าจอ
         function renderQuickPresets() {
             quickPresetsContainer.innerHTML = '';
-            quickPresets.forEach((p, index) => {
+            quickPresets.forEach((p) => {
                 const btn = document.createElement('button');
                 btn.type = 'button';
                 btn.onclick = () => quickFill(p.type, p.account, p.amount, p.name);
@@ -211,7 +211,6 @@
             amountInput.value = current + val;
         }
 
-        // จัดการ Modal ตั้งค่าปุ่มลัด
         function openSettingsModal() {
             const editorList = document.getElementById('presetEditorList');
             editorList.innerHTML = '';
@@ -225,7 +224,7 @@
             document.getElementById('settingsModal').classList.add('hidden');
         }
 
-        function createPresetRow(data = {name: '', amount: 0, type: 'expense', account: 'cash'}, index = null) {
+        function createPresetRow(data = {name: '', amount: 0, type: 'expense', account: 'cash'}) {
             const div = document.createElement('div');
             div.className = "flex gap-2 items-center bg-gray-50 p-2 rounded-xl border";
             div.innerHTML = `
