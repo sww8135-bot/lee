@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>แอปบันทึกรายรับ-รายจ่าย (ปุ่มลัดด่วน & ประวัติรายวัน)</title>
+    <title>แอปบันทึกรายรับ-รายจ่าย (ปรับแต่งปุ่มลัดได้)</title>
     <!-- Tailwind CSS สำหรับตกแต่งดีไซน์ -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -17,22 +17,19 @@
         <!-- หัวข้อแอป -->
         <header class="text-center mb-8">
             <h1 class="text-3xl font-bold text-indigo-600">💰 บันทึกรายรับ - รายจ่าย</h1>
-            <p class="text-gray-500 text-sm mt-1">จัดการบัญชีแยกกระเป๋าเงินสดและบัญชีธนาคาร พร้อมปุ่มลัดใช้งานด่วน</p>
+            <p class="text-gray-500 text-sm mt-1">จัดการบัญชีแยกกระเป๋าเงินสดและบัญชีธนาคาร พร้อมปุ่มลัดที่ปรับแต่งเองได้</p>
         </header>
 
         <!-- ส่วนสรุปยอด (Dashboard Cards) -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-            <!-- ยอดรวมทั้งหมด -->
             <div class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-5 rounded-2xl shadow-lg">
                 <p class="text-sm opacity-90">ยอดเงินสุทธิรวมทั้งหมด</p>
                 <h2 id="totalBalance" class="text-3xl font-bold mt-1">0.00 ฿</h2>
             </div>
-            <!-- เงินสด -->
             <div class="bg-white p-5 rounded-2xl shadow border border-gray-100">
                 <p class="text-sm text-gray-500">💵 เงินสดในมือ</p>
                 <h2 id="cashBalance" class="text-2xl font-semibold text-emerald-600 mt-1">0.00 ฿</h2>
             </div>
-            <!-- เงินในบัญชีธนาคาร -->
             <div class="bg-white p-5 rounded-2xl shadow border border-gray-100">
                 <p class="text-sm text-gray-500">🏦 เงินในบัญชีธนาคาร</p>
                 <h2 id="bankBalance" class="text-2xl font-semibold text-blue-600 mt-1">0.00 ฿</h2>
@@ -41,17 +38,18 @@
 
         <!-- ฟอร์มกรอกข้อมูล -->
         <div class="bg-white p-6 rounded-2xl shadow mb-8 border border-gray-100">
-            <h3 class="text-lg font-semibold mb-3 text-gray-700">✍️ เพิ่มรายการใหม่</h3>
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="text-lg font-semibold text-gray-700">✍️ เพิ่มรายการใหม่</h3>
+                <button onclick="openSettingsModal()" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1.5 rounded-lg transition flex items-center gap-1">
+                    ⚙️ จัดการ/แก้ไขปุ่มลัด
+                </button>
+            </div>
             
-            <!-- ปุ่มลัดรายการยอดฮิต (กดปุ่มเดียวเติมข้อมูลให้ทันที) -->
+            <!-- ปุ่มลัดรายการยอดฮิต (สร้างจากข้อมูลที่ตั้งค่าไว้) -->
             <div class="mb-4">
-                <label class="block text-xs font-medium text-gray-400 mb-2">⚡ ปุ่มลัดรายการที่ใช้บ่อย:</label>
-                <div class="flex flex-wrap gap-2">
-                    <button type="button" onclick="quickFill('expense', 'cash', 60, 'ค่าข้าว')" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs px-3 py-1.5 rounded-lg border border-indigo-200 transition">🍜 ค่าข้าว (60.-)</button>
-                    <button type="button" onclick="quickFill('expense', 'cash', 50, 'ค่ากาแฟ')" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs px-3 py-1.5 rounded-lg border border-indigo-200 transition">☕ ค่ากาแฟ (50.-)</button>
-                    <button type="button" onclick="quickFill('expense', 'cash', 40, 'ค่าเดินทาง')" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs px-3 py-1.5 rounded-lg border border-indigo-200 transition">🚗 ค่าเดินทาง (40.-)</button>
-                    <button type="button" onclick="quickFill('expense', 'cash', 100, 'ค่าอาหารค่ำ')" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs px-3 py-1.5 rounded-lg border border-indigo-200 transition">🍲 ค่าอาหารค่ำ (100.-)</button>
-                    <button type="button" onclick="quickFill('income', 'bank', 0, 'เงินเดือน')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs px-3 py-1.5 rounded-lg border border-emerald-200 transition">💵 เงินเดือน</button>
+                <label class="block text-xs font-medium text-gray-400 mb-2">⚡ ปุ่มลัดด่วน:</label>
+                <div id="quickPresetsContainer" class="flex flex-wrap gap-2">
+                    <!-- ปุ่มลัดจะถูกเรนเดอร์มาที่นี่ -->
                 </div>
             </div>
 
@@ -73,18 +71,17 @@
                 <div>
                     <label class="block text-xs font-medium text-gray-600 mb-1">จำนวนเงิน (บาท)</label>
                     <input type="number" id="amount" step="0.01" required placeholder="0.00" class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-400 outline-none">
-                    <!-- ปุ่มบวกเลขด่วน -->
                     <div class="flex gap-1 mt-1">
-                        <button type="button" onclick="addAmount(20)" class="bg-gray-100 px-2 py-0.5 rounded text-[11px] hover:bg-gray-250">+20</button>
-                        <button type="button" onclick="addAmount(50)" class="bg-gray-100 px-2 py-0.5 rounded text-[11px] hover:bg-gray-250">+50</button>
-                        <button type="button" onclick="addAmount(100)" class="bg-gray-100 px-2 py-0.5 rounded text-[11px] hover:bg-gray-250">+100</button>
-                        <button type="button" onclick="addAmount(500)" class="bg-gray-100 px-2 py-0.5 rounded text-[11px] hover:bg-gray-250">+500</button>
+                        <button type="button" onclick="addAmount(20)" class="bg-gray-100 px-2 py-0.5 rounded text-[11px] hover:bg-gray-200">+20</button>
+                        <button type="button" onclick="addAmount(50)" class="bg-gray-100 px-2 py-0.5 rounded text-[11px] hover:bg-gray-200">+50</button>
+                        <button type="button" onclick="addAmount(100)" class="bg-gray-100 px-2 py-0.5 rounded text-[11px] hover:bg-gray-200">+100</button>
+                        <button type="button" onclick="addAmount(500)" class="bg-gray-100 px-2 py-0.5 rounded text-[11px] hover:bg-gray-200">+500</button>
                         <button type="button" onclick="document.getElementById('amount').value=''" class="text-rose-500 text-[11px] ml-auto">ล้าง</button>
                     </div>
                 </div>
                 <div class="sm:col-span-2">
-                    <label class="block text-xs font-medium text-gray-600 mb-1">รายละเอียด (พิมพ์สะสมประวัติอัตโนมัติ)</label>
-                    <input type="text" id="description" list="descSuggestions" required placeholder="เช่น เงินเดือน, ค่าข้าว, ค่าเดินทาง" class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-400 outline-none">
+                    <label class="block text-xs font-medium text-gray-600 mb-1">รายละเอียด</label>
+                    <input type="text" id="description" list="descSuggestions" required placeholder="เช่น เงินเดือน, ค่าข้าว" class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-400 outline-none">
                     <datalist id="descSuggestions"></datalist>
                 </div>
                 <div>
@@ -99,13 +96,13 @@
             </form>
         </div>
 
-        <!-- ส่วนสรุปรายจ่ายรายวันในเดือนที่เลือก -->
+        <!-- ส่วนสรุปรายจ่ายรายวัน -->
         <div class="bg-white p-6 rounded-2xl shadow mb-8 border border-gray-100">
             <h3 class="text-lg font-semibold text-gray-700 mb-3">📅 สรุปยอดใช้จ่ายรายวัน (ในเดือนที่เลือก)</h3>
             <div id="dailySummaryContainer" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3"></div>
         </div>
 
-        <!-- รายการประวัติประจำเดือน -->
+        <!-- ประวัติรายการ -->
         <div class="bg-white p-6 rounded-2xl shadow border border-gray-100">
             <div class="flex flex-col sm:flex-row justify-between items-center mb-4 gap-2">
                 <h3 class="text-lg font-semibold text-gray-700">📋 ประวัติรายการ</h3>
@@ -133,9 +130,33 @@
         </div>
     </div>
 
-    <!-- ส่วน Script ควบคุมการทำงาน -->
+    <!-- Modal สำหรับตั้งค่า/แก้ไขปุ่มลัด -->
+    <div id="settingsModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl max-h-[90vh] overflow-y-auto">
+            <h3 class="text-lg font-bold text-gray-800 mb-4">⚙️ จัดการปุ่มลัดรายการที่ใช้บ่อย</h3>
+            <div id="presetEditorList" class="space-y-3 mb-4">
+                <!-- รายการฟอร์มแก้ไขปุ่มลัดแต่ละปุ่ม -->
+            </div>
+            <button onclick="addNewPresetField()" class="w-full border border-dashed border-indigo-400 text-indigo-600 py-2 rounded-lg text-sm mb-4 hover:bg-indigo-50 transition">+ เพิ่มปุ่มลัดใหม่</button>
+            <div class="flex justify-end gap-2">
+                <button onclick="closeSettingsModal()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm">ยกเลิก</button>
+                <button onclick="savePresets()" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm">บันทึกการตั้งค่า</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+        
+        // ค่าเริ่มต้นปุ่มลัด (ถ้ายังไม่เคยตั้งค่า)
+        let defaultPresets = [
+            { name: "ค่าข้าว", amount: 60, type: "expense", account: "cash" },
+            { name: "ค่ากาแฟ", amount: 50, type: "expense", account: "cash" },
+            { name: "ค่าเดินทาง", amount: 40, type: "expense", account: "cash" },
+            { name: "ค่าอาหารค่ำ", amount: 100, type: "expense", account: "cash" },
+            { name: "เงินเดือน", amount: 0, type: "income", account: "bank" }
+        ];
+        let quickPresets = JSON.parse(localStorage.getItem('quickPresets')) || defaultPresets;
 
         const form = document.getElementById('transactionForm');
         const transactionList = document.getElementById('transactionList');
@@ -149,6 +170,7 @@
         const amountInput = document.getElementById('amount');
         const noDataEl = document.getElementById('noData');
         const dailySummaryContainer = document.getElementById('dailySummaryContainer');
+        const quickPresetsContainer = document.getElementById('quickPresetsContainer');
 
         const today = new Date();
         const year = today.getFullYear();
@@ -159,7 +181,23 @@
         dateInput.value = currentDateStr;
         filterMonthEl.value = `${year}-${month}`;
 
-        // ฟังก์ชันกดปุ่มลัด
+        // เรนเดอร์ปุ่มลัดออกหน้าจอ
+        function renderQuickPresets() {
+            quickPresetsContainer.innerHTML = '';
+            quickPresets.forEach((p, index) => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.onclick = () => quickFill(p.type, p.account, p.amount, p.name);
+                const colorClass = p.type === 'income' 
+                    ? 'bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border-emerald-200' 
+                    : 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200';
+                
+                btn.className = `${colorClass} text-xs px-3 py-1.5 rounded-lg border transition flex items-center gap-1`;
+                btn.innerHTML = `${p.name} ${p.amount > 0 ? '(' + p.amount + '.-)' : ''}`;
+                quickPresetsContainer.appendChild(btn);
+            });
+        }
+
         function quickFill(type, account, amount, desc) {
             document.getElementById('type').value = type;
             document.getElementById('account').value = account;
@@ -168,13 +206,66 @@
             amountInput.focus();
         }
 
-        // ฟังก์ชันช่วยบวกเลขด่วน
         function addAmount(val) {
             const current = parseFloat(amountInput.value) || 0;
             amountInput.value = current + val;
         }
 
-        // อัปเดตรายการที่เคยพิมพ์ไว้ (Autocomplete)
+        // จัดการ Modal ตั้งค่าปุ่มลัด
+        function openSettingsModal() {
+            const editorList = document.getElementById('presetEditorList');
+            editorList.innerHTML = '';
+            quickPresets.forEach((p, i) => {
+                editorList.appendChild(createPresetRow(p, i));
+            });
+            document.getElementById('settingsModal').classList.remove('hidden');
+        }
+
+        function closeSettingsModal() {
+            document.getElementById('settingsModal').classList.add('hidden');
+        }
+
+        function createPresetRow(data = {name: '', amount: 0, type: 'expense', account: 'cash'}, index = null) {
+            const div = document.createElement('div');
+            div.className = "flex gap-2 items-center bg-gray-50 p-2 rounded-xl border";
+            div.innerHTML = `
+                <input type="text" placeholder="ชื่อรายการ" value="${data.name}" class="preset-name border p-1.5 rounded text-sm w-1/3 outline-none">
+                <input type="number" placeholder="จำนวนเงิน" value="${data.amount}" class="preset-amount border p-1.5 rounded text-sm w-1/4 outline-none">
+                <select class="preset-type border p-1.5 rounded text-sm outline-none">
+                    <option value="expense" ${data.type === 'expense' ? 'selected' : ''}>รายจ่าย(-)</option>
+                    <option value="income" ${data.type === 'income' ? 'selected' : ''}>รายรับ(+)</option>
+                </select>
+                <select class="preset-account border p-1.5 rounded text-sm outline-none">
+                    <option value="cash" ${data.account === 'cash' ? 'selected' : ''}>เงินสด</option>
+                    <option value="bank" ${data.account === 'bank' ? 'selected' : ''}>ธนาคาร</option>
+                </select>
+                <button type="button" onclick="this.parentElement.remove()" class="text-rose-500 hover:text-rose-700 text-xs px-2">❌</button>
+            `;
+            return div;
+        }
+
+        function addNewPresetField() {
+            document.getElementById('presetEditorList').appendChild(createPresetRow());
+        }
+
+        function savePresets() {
+            const rows = document.querySelectorAll('#presetEditorList > div');
+            let newPresets = [];
+            rows.forEach(row => {
+                const name = row.querySelector('.preset-name').value.trim();
+                const amount = parseFloat(row.querySelector('.preset-amount').value) || 0;
+                const type = row.querySelector('.preset-type').value;
+                const account = row.querySelector('.preset-account').value;
+                if(name) {
+                    newPresets.push({ name, amount, type, account });
+                }
+            });
+            quickPresets = newPresets;
+            localStorage.setItem('quickPresets', JSON.stringify(quickPresets));
+            renderQuickPresets();
+            closeSettingsModal();
+        }
+
         function updateSuggestions() {
             const uniqueDescs = [...new Set(transactions.map(t => t.description))];
             descList.innerHTML = '';
@@ -208,7 +299,6 @@
             transactions.push(newTransaction);
             saveAndRender();
             
-            // รีเซ็ตฟอร์มบางส่วนแต่คงวันที่ปัจจุบันไว้
             amountInput.value = '';
             descInput.value = '';
             dateInput.value = currentDateStr;
@@ -307,6 +397,7 @@
         }
 
         filterMonthEl.addEventListener('change', render);
+        renderQuickPresets();
         updateSuggestions();
         render();
     </script>
