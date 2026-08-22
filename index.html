@@ -5,8 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>แอปบันทึกรายรับ-รายจ่าย (เงินสด & ธนาคาร)</title>
     
-    <!-- โค้ดเรียกใช้งานไอคอนเว็บ (Favicon) -->
+    <!-- ไอคอนสำหรับคอมพิวเตอร์และเบราว์เซอร์ทั่วไป -->
     <link rel="icon" type="image/x-icon" href="./favicon.ico">
+
+    <!-- ไอคอนสำหรับมือถือ (แสดงเวลาเพิ่มไปยังหน้าจอหลัก) -->
+    <link rel="apple-touch-icon" href="./icon-192.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
 
     <!-- Tailwind CSS สำหรับตกแต่งดีไซน์ -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -365,40 +369,4 @@
                 });
             }
 
-            transactionList.innerHTML = '';
-            if (filteredTransactions.length === 0) {
-                noDataEl.classList.remove('hidden');
-            } else {
-                noDataEl.classList.add('hidden');
-                filteredTransactions.sort((a, b) => new Date(b.date) - new Date(b.date) || b.id - a.id);
-
-                filteredTransactions.forEach(t => {
-                    const row = document.createElement('tr');
-                    row.className = "hover:bg-gray-50 transition";
-                    
-                    const isIncome = t.type === 'income';
-                    const amountClass = isIncome ? 'text-emerald-600 font-medium' : 'text-rose-500 font-medium';
-                    const amountSign = isIncome ? '+' : '-';
-                    const accountText = t.account === 'cash' ? '💵 เงินสด' : '🏦 ธนาคาร';
-
-                    row.innerHTML = `
-                        <td class="py-3 px-2 text-gray-500 text-xs">${formatDateThai(t.date)}</td>
-                        <td class="py-3 px-2 text-xs font-medium">${accountText}</td>
-                        <td class="py-3 px-2">${t.description}</td>
-                        <td class="py-3 px-2 text-right ${amountClass}">${amountSign}${t.amount.toLocaleString('th-TH', {minimumFractionDigits: 2})} ฿</td>
-                        <td class="py-3 px-2 text-center">
-                            <button onclick="deleteTransaction(${t.id})" class="text-gray-400 hover:text-rose-600 transition text-xs bg-gray-100 hover:bg-rose-50 px-2 py-1 rounded">ลบ</button>
-                        </td>
-                    `;
-                    transactionList.appendChild(row);
-                });
-            }
-        }
-
-        filterMonthEl.addEventListener('change', render);
-        renderQuickPresets();
-        updateSuggestions();
-        render();
-    </script>
-</body>
-</html>
+            transactionList.innerHTML = '
