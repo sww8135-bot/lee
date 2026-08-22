@@ -3,274 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>แอปบันทึกรายรับ-รายจ่าย (เงินสด & ธนาคาร)</title>
-    <!-- Tailwind CSS สำหรับตกแต่งดีไซน์ -->
+    <title>แอปบันทึกรายรับ-รายจ่าย (โหมดประหยัดเวลา)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Prompt', sans-serif; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 min-p-4">
+<body class="bg-gray-50 text-gray-800 p-4">
 
-    <div class="max-w-4xl mx-auto p-4 md:p-6">
-        <!-- หัวข้อแอป -->
-        <header class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-indigo-600">💰 บันทึกรายรับ - รายจ่าย</h1>
-            <p class="text-gray-500 text-sm mt-1">จัดการบัญชีแยกกระเป๋าเงินสดและบัญชีธนาคาร พร้อมสรุปยอดรายวัน</p>
+    <div class="max-w-4xl mx-auto">
+        <header class="text-center mb-6">
+            <h1 class="text-2xl font-bold text-indigo-600">💰 บันทึกรายรับ - รายจ่าย</h1>
         </header>
-
-        <!-- ส่วนสรุปยอด (Dashboard Cards) -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-            <!-- ยอดรวมทั้งหมด -->
-            <div class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-5 rounded-2xl shadow-lg">
-                <p class="text-sm opacity-90">ยอดเงินสุทธิรวมทั้งหมด</p>
-                <h2 id="totalBalance" class="text-3xl font-bold mt-1">0.00 ฿</h2>
-            </div>
-            <!-- เงินสด -->
-            <div class="bg-white p-5 rounded-2xl shadow border border-gray-100">
-                <p class="text-sm text-gray-500">💵 เงินสดในมือ</p>
-                <h2 id="cashBalance" class="text-2xl font-semibold text-emerald-600 mt-1">0.00 ฿</h2>
-            </div>
-            <!-- เงินในบัญชีธนาคาร -->
-            <div class="bg-white p-5 rounded-2xl shadow border border-gray-100">
-                <p class="text-sm text-gray-500">🏦 เงินในบัญชีธนาคาร</p>
-                <h2 id="bankBalance" class="text-2xl font-semibold text-blue-600 mt-1">0.00 ฿</h2>
-            </div>
-        </div>
 
         <!-- ฟอร์มกรอกข้อมูล -->
         <div class="bg-white p-6 rounded-2xl shadow mb-8 border border-gray-100">
-            <h3 class="text-lg font-semibold mb-4 text-gray-700">✍️ เพิ่มรายการใหม่</h3>
-            <form id="transactionForm" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">ประเภทรายการ</label>
-                    <select id="type" class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-400 outline-none">
+            <h3 class="text-md font-semibold mb-4 text-gray-700">✍️ เพิ่มรายการใหม่ (ระบบจดจำประวัติ)</h3>
+            <form id="transactionForm" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                
+                <div class="grid grid-cols-2 gap-2">
+                    <select id="type" class="border rounded-lg p-2 text-sm bg-gray-50">
                         <option value="income">รายรับ (+)</option>
                         <option value="expense">รายจ่าย (-)</option>
                     </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">แหล่งเงิน</label>
-                    <select id="account" class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-400 outline-none">
+                    <select id="account" class="border rounded-lg p-2 text-sm bg-gray-50">
                         <option value="cash">เงินสด</option>
                         <option value="bank">บัญชีธนาคาร</option>
                     </select>
                 </div>
+
+                <!-- ช่องรายละเอียดที่จำรายการเก่าได้ -->
                 <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">จำนวนเงิน (บาท)</label>
-                    <input type="number" id="amount" step="0.01" required placeholder="0.00" class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-400 outline-none">
+                    <input type="text" id="description" list="descSuggestions" required placeholder="พิมพ์รายละเอียด..." class="w-full border rounded-lg p-2 text-sm outline-indigo-400">
+                    <datalist id="descSuggestions"></datalist>
                 </div>
+
+                <!-- ช่องจำนวนเงิน พร้อมปุ่มด่วน -->
                 <div class="sm:col-span-2">
-                    <label class="block text-xs font-medium text-gray-600 mb-1">รายละเอียด</label>
-                    <input type="text" id="description" required placeholder="เช่น เงินเดือน, ค่าข้าว, ค่าเดินทาง" class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-400 outline-none">
+                    <input type="number" id="amount" required placeholder="จำนวนเงิน" class="w-full border rounded-lg p-2 text-sm mb-2">
+                    <div class="flex gap-2">
+                        <button type="button" onclick="addAmount(20)" class="bg-gray-200 px-3 py-1 rounded-full text-xs hover:bg-indigo-100">+20</button>
+                        <button type="button" onclick="addAmount(50)" class="bg-gray-200 px-3 py-1 rounded-full text-xs hover:bg-indigo-100">+50</button>
+                        <button type="button" onclick="addAmount(100)" class="bg-gray-200 px-3 py-1 rounded-full text-xs hover:bg-indigo-100">+100</button>
+                        <button type="button" onclick="addAmount(500)" class="bg-gray-200 px-3 py-1 rounded-full text-xs hover:bg-indigo-100">+500</button>
+                        <button type="button" onclick="document.getElementById('amount').value=''" class="text-rose-500 text-xs ml-auto">ล้างตัวเลข</button>
+                    </div>
                 </div>
-                <div>
-                    <label class="block text-xs font-medium text-gray-600 mb-1">วันที่ทำรายการ</label>
-                    <input type="date" id="dateInput" class="w-full border rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-400 outline-none" required>
-                </div>
-                <div class="sm:col-span-full">
-                    <button type="submit" class="w-full bg-indigo-600 text-white font-medium py-2.5 rounded-lg hover:bg-indigo-700 transition shadow-md">
-                        บันทึกรายการ
-                    </button>
+
+                <div class="sm:col-span-2">
+                    <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-lg font-medium hover:bg-indigo-700">บันทึกรายการ</button>
                 </div>
             </form>
         </div>
-
-        <!-- ส่วนสรุปรายจ่ายรายวันในเดือนที่เลือก -->
-        <div class="bg-white p-6 rounded-2xl shadow mb-8 border border-gray-100">
-            <h3 class="text-lg font-semibold text-gray-700 mb-3">📅 สรุปยอดใช้จ่ายรายวัน (ในเดือนที่เลือก)</h3>
-            <div id="dailySummaryContainer" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
-                <!-- ข้อมูลสรุปรายวันจะแสดงที่นี่ -->
-            </div>
-        </div>
-
-        <!-- รายการประวัติประจำเดือน -->
-        <div class="bg-white p-6 rounded-2xl shadow border border-gray-100">
-            <div class="flex flex-col sm:flex-row justify-between items-center mb-4 gap-2">
-                <h3 class="text-lg font-semibold text-gray-700">📋 ประวัติรายการ</h3>
-                <!-- ตัวกรองเลือกดูตามเดือน -->
-                <div class="flex items-center gap-2">
-                    <label class="text-xs text-gray-500">เลือกเดือน:</label>
-                    <input type="month" id="filterMonth" class="border rounded-lg p-1.5 text-sm outline-none focus:ring-1 focus:ring-indigo-400">
-                </div>
-            </div>
-
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
-                    <thead>
-                        <tr class="border-b text-xs text-gray-400 uppercase tracking-wider">
-                            <th class="py-3 px-2">วันที่</th>
-                            <th class="py-3 px-2">แหล่งเงิน</th>
-                            <th class="py-3 px-2">รายการ</th>
-                            <th class="py-3 px-2 text-right">จำนวนเงิน</th>
-                            <th class="py-3 px-2 text-center">จัดการ</th>
-                        </tr>
-                    </thead>
-                    <tbody id="transactionList" class="divide-y text-sm">
-                        <!-- ข้อมูลจะถูกแทรกลงมาตรงนี้ด้วย JavaScript -->
-                    </tbody>
-                </table>
-                <div id="noData" class="text-center py-8 text-gray-400 hidden">ไม่มีข้อมูลในเดือนนี้</div>
-            </div>
-        </div>
     </div>
 
-    <!-- ส่วน Script ควบคุมการทำงาน -->
     <script>
         let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+        const descInput = document.getElementById('description');
+        const descList = document.getElementById('descSuggestions');
+        const amountInput = document.getElementById('amount');
 
-        const form = document.getElementById('transactionForm');
-        const transactionList = document.getElementById('transactionList');
-        const totalBalanceEl = document.getElementById('totalBalance');
-        const cashBalanceEl = document.getElementById('cashBalance');
-        const bankBalanceEl = document.getElementById('bankBalance');
-        const filterMonthEl = document.getElementById('filterMonth');
-        const dateInput = document.getElementById('dateInput');
-        const noDataEl = document.getElementById('noData');
-        const dailySummaryContainer = document.getElementById('dailySummaryContainer');
+        // ฟังก์ชันช่วยบวกเลขด่วน
+        function addAmount(val) {
+            const current = parseFloat(amountInput.value) || 0;
+            amountInput.value = current + val;
+        }
 
-        // ตั้งค่าวันที่เริ่มต้นในฟอร์มให้เป็นวันปัจจุบัน (รูปแบบ YYYY-MM-DD)
-        const today = new Date();
-        const year = today.getFullYear();
-        const month = String(today.getMonth() + 1).padStart(2, '0');
-        const day = String(today.getDate()).padStart(2, '0');
-        
-        const currentDateStr = `${year}-${month}-${day}`;
-        dateInput.value = currentDateStr;
-        filterMonthEl.value = `${year}-${month}`;
+        // อัปเดตรายการที่เคยพิมพ์ไว้ (Autocomplete)
+        function updateSuggestions() {
+            const uniqueDescs = [...new Set(transactions.map(t => t.description))];
+            descList.innerHTML = '';
+            uniqueDescs.forEach(d => {
+                const opt = document.createElement('option');
+                opt.value = d;
+                descList.appendChild(opt);
+            });
+        }
 
-        // เมื่อกดบันทึกข้อมูล
-        form.addEventListener('submit', function(e) {
+        document.getElementById('transactionForm').addEventListener('submit', function(e) {
             e.preventDefault();
-
-            const type = document.getElementById('type').value;
-            const account = document.getElementById('account').value;
-            const amount = parseFloat(document.getElementById('amount').value);
-            const description = document.getElementById('description').value;
-            const date = dateInput.value; // รูปแบบ YYYY-MM-DD
-            const transactionMonth = date.slice(0, 7); // ตัดเอาเฉพาะ YYYY-MM สำหรับกรองเดือน
-
             const newTransaction = {
                 id: Date.now(),
-                type,
-                account,
-                amount,
-                description,
-                date,
-                month: transactionMonth
+                type: document.getElementById('type').value,
+                account: document.getElementById('account').value,
+                amount: parseFloat(amountInput.value),
+                description: descInput.value,
+                date: new Date().toISOString().slice(0, 10)
             };
-
             transactions.push(newTransaction);
-            saveAndRender();
-            form.reset();
-            dateInput.value = currentDateStr; // คงค่าวันปัจจุบันไว้
+            localStorage.setItem('transactions', JSON.stringify(transactions));
+            
+            // รีเซ็ตฟอร์ม
+            amountInput.value = '';
+            descInput.value = '';
+            updateSuggestions();
+            alert("บันทึกสำเร็จ!");
         });
 
-        // ฟังก์ชันลบรายการ
-        function deleteTransaction(id) {
-            transactions = transactions.filter(t => t.id !== id);
-            saveAndRender();
-        }
-
-        // บันทึกลง LocalStorage และสั่งอัปเดตหน้าจอ
-        function saveAndRender() {
-            localStorage.setItem('transactions', JSON.stringify(transactions));
-            render();
-        }
-
-        // แปลงรูปแบบวันที่ให้อ่านง่าย เช่น 2026-08-22 เป็น 22 ส.ค. 69
-        function formatDateThai(dateStr) {
-            if (!dateStr) return '';
-            const [y, m, d] = dateStr.split('-');
-            const months = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
-            return `${parseInt(d)} ${months[parseInt(m) - 1]} ${parseInt(y) + 543}`;
-        }
-
-        // ฟังก์ชันประมวลผลและแสดงผลข้อมูล
-        function render() {
-            const selectedMonth = filterMonthEl.value;
-            
-            let totalCash = 0;
-            let totalBank = 0;
-
-            // คำนวณยอดเงินรวมทั้งหมดทุกกระเป๋า
-            transactions.forEach(t => {
-                const val = t.type === 'income' ? t.amount : -t.amount;
-                if (t.account === 'cash') totalCash += val;
-                if (t.account === 'bank') totalBank += val;
-            });
-
-            const grandTotal = totalCash + totalBank;
-
-            // อัปเดต UI ยอดรวมภาพรวม
-            totalBalanceEl.innerText = grandTotal.toLocaleString('th-TH', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' ฿';
-            cashBalanceEl.innerText = totalCash.toLocaleString('th-TH', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' ฿';
-            bankBalanceEl.innerText = totalBank.toLocaleString('th-TH', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' ฿';
-
-            // กรองข้อมูลเฉพาะเดือนที่เลือก
-            const filteredTransactions = transactions.filter(t => t.month === selectedMonth);
-
-            // --- คำนวณรายจ่ายรายวันเฉพาะในเดือนที่เลือก ---
-            let dailyExpenses = {};
-            filteredTransactions.forEach(t => {
-                if (t.type === 'expense') {
-                    dailyExpenses[t.date] = (dailyExpenses[t.date] || 0) + t.amount;
-                }
-            });
-
-            // แสดงผลกล่องสรุปรายวัน
-            dailySummaryContainer.innerHTML = '';
-            const sortedDates = Object.keys(dailyExpenses).sort();
-            
-            if (sortedDates.length === 0) {
-                dailySummaryContainer.innerHTML = `<p class="text-xs text-gray-400 col-span-full">ยังไม่มีรายจ่ายในเดือนนี้</p>`;
-            } else {
-                sortedDates.forEach(date => {
-                    const box = document.createElement('div');
-                    box.className = "bg-gray-50 border border-gray-100 p-3 rounded-xl text-center shadow-sm";
-                    box.innerHTML = `
-                        <p class="text-xs text-gray-500 font-medium">${formatDateThai(date)}</p>
-                        <p class="text-sm font-bold text-rose-500 mt-1">${dailyExpenses[date].toLocaleString('th-TH', {minimumFractionDigits: 2})} ฿</p>
-                    `;
-                    dailySummaryContainer.appendChild(box);
-                });
-            }
-
-            // แสดงตารางประวัติ
-            transactionList.innerHTML = '';
-            if (filteredTransactions.length === 0) {
-                noDataEl.classList.remove('hidden');
-            } else {
-                noDataEl.classList.add('hidden');
-                // เรียงลำดับจากวันที่ล่าสุดไปเก่าสุด
-                filteredTransactions.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-                filteredTransactions.forEach(t => {
-                    const row = document.createElement('tr');
-                    row.className = "hover:bg-gray-50 transition";
-                    
-                    const isIncome = t.type === 'income';
-                    const amountClass = isIncome ? 'text-emerald-600 font-medium' : 'text-rose-500 font-medium';
-                    const amountSign = isIncome ? '+' : '-';
-                    const accountText = t.account === 'cash' ? '💵 เงินสด' : '🏦 ธนาคาร';
-
-                    row.innerHTML = `
-                        <td class="py-3 px-2 text-gray-500 text-xs">${formatDateThai(t.date)}</td>
-                        <td class="py-3 px-2 text-xs font-medium">${accountText}</td>
-                        <td class="py-3 px-2">${t.description}</td>
-                        <td class="py-3 px-2 text-right ${amountClass}">${amountSign}${t.amount.toLocaleString('th-TH', {minimumFractionDigits: 2})} ฿</td>
-                        <td class="py-3 px-2 text-center">
-                            <button onclick="deleteTransaction(${t.id})" class="text-gray-400 hover:text-rose-600 transition text-xs bg-gray-100 hover:bg-rose-50 px-2 py-1 rounded">ลบ</button>
-                        </td>
-                    `;
-                    transactionList.appendChild(row);
-                });
-            }
-        }
-
-        filterMonthEl.addEventListener('change', render);
-        render();
+        // โหลดรายการเดิมมาแสดงตอนเริ่ม
+        updateSuggestions();
     </script>
 </body>
 </html>
