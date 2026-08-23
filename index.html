@@ -49,7 +49,6 @@
 
     <!-- ================= 1. SECTION: SCHEDULE (ตารางซ้อม) ================= -->
     <div id="section-schedule" class="space-y-6">
-      <!-- 1.1 หน้าแสดงรายการหัวข้อทั้งหมด (Category List View) -->
       <section id="category-view" class="space-y-4">
         <div class="flex justify-between items-center mb-4">
           <h2 class="text-lg font-semibold text-slate-300">ตารางการซ้อมทั้งหมด</h2>
@@ -66,7 +65,6 @@
         </div>
       </section>
 
-      <!-- 1.2 หน้าแสดงรายละเอียดหัวข้อที่เลือก (Detail View) -->
       <section id="detail-view" class="hidden space-y-6">
         <div class="flex items-center justify-between border-b border-slate-800 pb-4">
           <button onclick="showMainView()" class="text-slate-400 hover:text-white flex items-center text-sm font-medium transition">
@@ -108,44 +106,98 @@
     <!-- ================= 2. SECTION: SHOT STATISTICS (สถิติการยิง) ================= -->
     <div id="section-stats" class="hidden space-y-6">
       
-      <!-- Top Action & Overview Header -->
+      <!-- Top Action Header -->
       <div class="flex justify-between items-center">
         <div>
           <h2 class="text-xl font-bold text-white">บันทึกสถิติการยิงประตู</h2>
-          <p class="text-xs text-slate-400">เช็กความแม่นยำและติดตามพัฒนาการการยิงบาสของคุณ</p>
+          <p class="text-xs text-slate-400">สรุปผลความแม่นยำแยกตามตำแหน่งการยิง</p>
         </div>
         <button onclick="openShotModal()" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-xl font-medium text-sm transition flex items-center shadow-lg shadow-orange-500/20 active:scale-95">
           <i class="fa-solid fa-plus-circle mr-2"></i>บันทึกสถิติใหม่
         </button>
       </div>
 
-      <!-- Overview Cards -->
-      <div class="grid grid-cols-3 gap-3 sm:gap-4">
-        <div class="bg-slate-800/70 border border-slate-700 rounded-2xl p-4 text-center">
-          <p class="text-xs text-slate-400 mb-1">ยิงทั้งหมด</p>
-          <p id="stat-total-shots" class="text-2xl sm:text-3xl font-bold text-white">0</p>
-          <span class="text-[10px] text-slate-500">ลูก</span>
+      <!-- Grid Cards แยกตามประเภทการยิง 4 แบบ -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        
+        <!-- 1. ใต้แป้น / เลย์อัพ -->
+        <div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-5 shadow-lg relative overflow-hidden">
+          <div class="flex justify-between items-start mb-3">
+            <div>
+              <span class="text-xs font-semibold text-orange-400 bg-orange-500/10 px-2.5 py-1 rounded-md border border-orange-500/20">ใต้แป้น / เลย์อัพ</span>
+              <h3 class="text-2xl font-bold text-white mt-2" id="stat-pct-layup">0.0%</h3>
+            </div>
+            <div class="bg-slate-700/50 p-3 rounded-xl text-slate-400">
+              <i class="fa-solid fa-basketball-ball text-xl"></i>
+            </div>
+          </div>
+          <div class="flex justify-between items-center text-xs text-slate-400 pt-3 border-t border-slate-700/50">
+            <span>ยิงเข้า: <strong class="text-emerald-400 text-sm" id="stat-made-layup">0</strong> ลูก</span>
+            <span>ยิงทั้งหมด: <strong class="text-white text-sm" id="stat-att-layup">0</strong> ลูก</span>
+          </div>
         </div>
-        <div class="bg-slate-800/70 border border-slate-700 rounded-2xl p-4 text-center">
-          <p class="text-xs text-slate-400 mb-1">ยิงเข้า</p>
-          <p id="stat-total-made" class="text-2xl sm:text-3xl font-bold text-emerald-400">0</p>
-          <span class="text-[10px] text-slate-500">ลูก</span>
+
+        <!-- 2. ระยะกลาง -->
+        <div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-5 shadow-lg relative overflow-hidden">
+          <div class="flex justify-between items-start mb-3">
+            <div>
+              <span class="text-xs font-semibold text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-md border border-amber-500/20">ระยะกลาง (Mid-range)</span>
+              <h3 class="text-2xl font-bold text-white mt-2" id="stat-pct-mid">0.0%</h3>
+            </div>
+            <div class="bg-slate-700/50 p-3 rounded-xl text-slate-400">
+              <i class="fa-solid fa-crosshair text-xl"></i>
+            </div>
+          </div>
+          <div class="flex justify-between items-center text-xs text-slate-400 pt-3 border-t border-slate-700/50">
+            <span>ยิงเข้า: <strong class="text-emerald-400 text-sm" id="stat-made-mid">0</strong> ลูก</span>
+            <span>ยิงทั้งหมด: <strong class="text-white text-sm" id="stat-att-mid">0</strong> ลูก</span>
+          </div>
         </div>
-        <div class="bg-slate-800/70 border border-slate-700 rounded-2xl p-4 text-center">
-          <p class="text-xs text-slate-400 mb-1">ความแม่นยำเฉลี่ย</p>
-          <p id="stat-avg-pct" class="text-2xl sm:text-3xl font-bold text-orange-400">0%</p>
-          <span class="text-[10px] text-slate-500">FG%</span>
+
+        <!-- 3. ยิง 3 คะแนน -->
+        <div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-5 shadow-lg relative overflow-hidden">
+          <div class="flex justify-between items-start mb-3">
+            <div>
+              <span class="text-xs font-semibold text-purple-400 bg-purple-500/10 px-2.5 py-1 rounded-md border border-purple-500/20">ยิง 3 คะแนน</span>
+              <h3 class="text-2xl font-bold text-white mt-2" id="stat-pct-3pt">0.0%</h3>
+            </div>
+            <div class="bg-slate-700/50 p-3 rounded-xl text-slate-400">
+              <i class="fa-solid fa-fire text-xl"></i>
+            </div>
+          </div>
+          <div class="flex justify-between items-center text-xs text-slate-400 pt-3 border-t border-slate-700/50">
+            <span>ยิงเข้า: <strong class="text-emerald-400 text-sm" id="stat-made-3pt">0</strong> ลูก</span>
+            <span>ยิงทั้งหมด: <strong class="text-white text-sm" id="stat-att-3pt">0</strong> ลูก</span>
+          </div>
         </div>
+
+        <!-- 4. ฟรีโทร (ลูกโทษ) -->
+        <div class="bg-slate-800/80 border border-slate-700 rounded-2xl p-5 shadow-lg relative overflow-hidden">
+          <div class="flex justify-between items-start mb-3">
+            <div>
+              <span class="text-xs font-semibold text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-md border border-blue-500/20">ลูกโทษ (Free Throws)</span>
+              <h3 class="text-2xl font-bold text-white mt-2" id="stat-pct-ft">0.0%</h3>
+            </div>
+            <div class="bg-slate-700/50 p-3 rounded-xl text-slate-400">
+              <i class="fa-solid fa-bullseye text-xl"></i>
+            </div>
+          </div>
+          <div class="flex justify-between items-center text-xs text-slate-400 pt-3 border-t border-slate-700/50">
+            <span>ยิงเข้า: <strong class="text-emerald-400 text-sm" id="stat-made-ft">0</strong> ลูก</span>
+            <span>ยิงทั้งหมด: <strong class="text-white text-sm" id="stat-att-ft">0</strong> ลูก</span>
+          </div>
+        </div>
+
       </div>
 
-      <!-- Shot History Table/List -->
+      <!-- History Section -->
       <div class="bg-slate-800/50 border border-slate-700/80 rounded-2xl p-4 sm:p-5">
         <h3 class="text-md font-semibold text-slate-300 mb-4 flex items-center">
           <i class="fa-solid fa-history mr-2 text-orange-400"></i>ประวัติการยิงย้อนหลัง
         </h3>
         
         <div id="shot-history-list" class="space-y-3">
-          <!-- JS จะมาเติมรายการยิงที่บันทึกไว้ -->
+          <!-- JS จะมาเติมตรงนี้ -->
         </div>
       </div>
 
@@ -155,14 +207,14 @@
 
   <!-- ================= MODALS ================= -->
 
-  <!-- Modal 1: เพิ่ม/แก้ไข หัวข้อหลัก (Category) -->
+  <!-- Modal 1: Category -->
   <div id="category-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-2xl p-6 shadow-2xl relative">
       <h3 id="cat-modal-title" class="text-lg font-bold text-white mb-4">เพิ่มหัวข้อใหม่</h3>
       <form id="category-form" onsubmit="saveCategory(event)">
         <input type="hidden" id="cat-id">
         <div class="mb-4">
-          <label class="block text-xs font-medium text-slate-400 mb-1">ชื่อหัวข้อ (เช่น วันจันทร์, การยิงประตู)</label>
+          <label class="block text-xs font-medium text-slate-400 mb-1">ชื่อหัวข้อ</label>
           <input type="text" id="cat-title" required placeholder="เช่น วันจันทร์" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 transition">
         </div>
         <div class="flex justify-end space-x-3">
@@ -173,7 +225,7 @@
     </div>
   </div>
 
-  <!-- Modal 2: เพิ่ม/แก้ไข รายการย่อย (Item) -->
+  <!-- Modal 2: Item -->
   <div id="item-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-2xl p-6 shadow-2xl relative">
       <h3 id="item-modal-title" class="text-lg font-bold text-white mb-4">เพิ่มรายการซ้อม</h3>
@@ -181,15 +233,15 @@
         <input type="hidden" id="item-id">
         <div class="mb-4">
           <label class="block text-xs font-medium text-slate-400 mb-1">ชื่อท่า / หัวข้อย่อย</label>
-          <input type="text" id="item-title" required placeholder="เช่น 1) ยืดเส้น, 2) ยิงใต้แป้น" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 transition">
+          <input type="text" id="item-title" required placeholder="เช่น 1) ยืดเส้น" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 transition">
         </div>
         <div class="mb-4">
           <label class="block text-xs font-medium text-slate-400 mb-1">จำนวนที่ต้องทำ / เป้าหมาย</label>
-          <input type="text" id="item-amount" placeholder="เช่น 10 ลูก, 5 นาที, 3 เซต" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 transition">
+          <input type="text" id="item-amount" placeholder="เช่น 10 ลูก, 5 นาที" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 transition">
         </div>
         <div class="mb-6">
-          <label class="block text-xs font-medium text-slate-400 mb-1">รายละเอียดเพิ่มเติม (ขึ้นบรรทัดใหม่เพื่อแยกข้อ)</label>
-          <textarea id="item-details" rows="4" placeholder="- วิ่งเหมาะอยู่กับที่&#10;- วิ่งแตะตูด&#10;- วิ่งยกเข่าสูง" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-white focus:outline-none focus:border-orange-500 transition text-sm"></textarea>
+          <label class="block text-xs font-medium text-slate-400 mb-1">รายละเอียดเพิ่มเติม</label>
+          <textarea id="item-details" rows="4" placeholder="- รายละเอียด" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-white focus:outline-none focus:border-orange-500 transition text-sm"></textarea>
         </div>
         <div class="flex justify-end space-x-3">
           <button type="button" onclick="closeItemModal()" class="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl text-sm font-medium hover:bg-slate-700 transition">ยกเลิก</button>
@@ -199,7 +251,7 @@
     </div>
   </div>
 
-  <!-- Modal 3: เพิ่ม/แก้ไข สถิติการยิง (Shot Stat) -->
+  <!-- Modal 3: Shot Stat -->
   <div id="shot-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-2xl p-6 shadow-2xl relative">
       <h3 class="text-lg font-bold text-white mb-4">บันทึกสถิติการยิง</h3>
@@ -211,11 +263,11 @@
         </div>
 
         <div class="mb-4">
-          <label class="block text-xs font-medium text-slate-400 mb-1">ตำแหน่ง / ระยะที่ยิง</label>
+          <label class="block text-xs font-medium text-slate-400 mb-1">ตำแหน่ง / ประเภทการยิง</label>
           <select id="shot-location" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 transition">
-            <option value="ใต้แป้น / เลย์อัพ">ใต้แป้น / เลย์อัพ (Under Rim)</option>
+            <option value="ใต้แป้น / เลย์อัพ">ใต้แป้น / เลย์อัพ</option>
             <option value="ระยะกลาง">ระยะกลาง (Mid-range)</option>
-            <option value="3 คะแนน">3 คะแนน (3-Pointers)</option>
+            <option value="ยิง 3 คะแนน">ยิง 3 คะแนน</option>
             <option value="ลูกโทษ">ลูกโทษ (Free Throws)</option>
           </select>
         </div>
@@ -241,51 +293,29 @@
 
   <!-- App Script Logic -->
   <script>
-    // --- APP STATE & STORAGE ---
     const defaultCategories = [
       {
         id: 'cat-1',
         title: 'วันจันทร์',
         items: [
-          {
-            id: 'item-1',
-            title: '1) ยืดเส้น',
-            amount: '5 นาที',
-            details: '-วิ่งเหมาะอยู่กับที่\n-วิ่งแตะตูด\n-วิ่งยกเข่าสูง'
-          },
-          {
-            id: 'item-2',
-            title: '2) ยิงใต้แป้น',
-            amount: '10 ลูก',
-            details: '-ยิงใต้แป้น 10 ลูก'
-          }
+          { id: 'item-1', title: '1) ยืดเส้น', amount: '5 นาที', details: '-วิ่งเหมาะอยู่กับที่\n-วิ่งแตะตูด\n-วิ่งยกเข่าสูง' },
+          { id: 'item-2', title: '2) ยิงใต้แป้น', amount: '10 ลูก', details: '-ยิงใต้แป้น 10 ลูก' }
         ]
       }
     ];
 
     const defaultShots = [
-      {
-        id: 'shot-1',
-        date: new Date().toISOString().split('T')[0],
-        location: 'ระยะกลาง',
-        attempted: 20,
-        made: 12
-      }
+      { id: 'shot-1', date: new Date().toISOString().split('T')[0], location: 'ยิง 3 คะแนน', attempted: 20, made: 10 },
+      { id: 'shot-2', date: new Date().toISOString().split('T')[0], location: 'ใต้แป้น / เลย์อัพ', attempted: 15, made: 12 }
     ];
 
     let categories = JSON.parse(localStorage.getItem('basketball_schedules')) || defaultCategories;
     let shotStats = JSON.parse(localStorage.getItem('basketball_shot_stats')) || defaultShots;
     let activeCategoryId = null;
 
-    function saveData() {
-      localStorage.setItem('basketball_schedules', JSON.stringify(categories));
-    }
+    function saveData() { localStorage.setItem('basketball_schedules', JSON.stringify(categories)); }
+    function saveShotData() { localStorage.setItem('basketball_shot_stats', JSON.stringify(shotStats)); }
 
-    function saveShotData() {
-      localStorage.setItem('basketball_shot_stats', JSON.stringify(shotStats));
-    }
-
-    // --- NAVIGATION SWITCH ---
     function switchNav(tab) {
       const scheduleSec = document.getElementById('section-schedule');
       const statsSec = document.getElementById('section-stats');
@@ -295,21 +325,18 @@
       if (tab === 'schedule') {
         scheduleSec.classList.remove('hidden');
         statsSec.classList.add('hidden');
-        
         scheduleBtn.className = 'px-3.5 py-1.5 rounded-lg text-sm font-medium transition bg-orange-500 text-white shadow';
         statsBtn.className = 'px-3.5 py-1.5 rounded-lg text-sm font-medium transition text-slate-400 hover:text-white';
         showMainView();
       } else {
         scheduleSec.classList.add('hidden');
         statsSec.classList.remove('hidden');
-
         statsBtn.className = 'px-3.5 py-1.5 rounded-lg text-sm font-medium transition bg-orange-500 text-white shadow';
         scheduleBtn.className = 'px-3.5 py-1.5 rounded-lg text-sm font-medium transition text-slate-400 hover:text-white';
         renderShotStats();
       }
     }
 
-    // --- SCHEDULE LOGIC ---
     function showMainView() {
       activeCategoryId = null;
       document.getElementById('category-view').classList.remove('hidden');
@@ -324,7 +351,6 @@
 
       document.getElementById('category-view').classList.add('hidden');
       document.getElementById('detail-view').classList.remove('hidden');
-
       document.getElementById('detail-title').innerText = cat.title;
       document.getElementById('edit-cat-btn').onclick = () => openCategoryModal(cat.id);
       document.getElementById('delete-cat-btn').onclick = () => deleteCategory(cat.id);
@@ -339,13 +365,7 @@
       countLabel.innerText = `${categories.length} หัวข้อ`;
 
       if (categories.length === 0) {
-        container.innerHTML = `
-          <div class="col-span-full text-center py-12 bg-slate-800/30 rounded-2xl border border-dashed border-slate-700">
-            <i class="fa-solid fa-folder-open text-4xl text-slate-600 mb-3"></i>
-            <p class="text-slate-400">ยังไม่มีหัวข้อซ้อมบาส</p>
-            <button onclick="openCategoryModal()" class="mt-3 text-sm text-orange-400 hover:underline">+ เพิ่มหัวข้อแรก</button>
-          </div>
-        `;
+        container.innerHTML = `<div class="col-span-full text-center py-12 bg-slate-800/30 rounded-2xl border border-dashed border-slate-700"><p class="text-slate-400">ยังไม่มีหัวข้อซ้อมบาส</p></div>`;
         return;
       }
 
@@ -377,12 +397,7 @@
       container.innerHTML = '';
 
       if (!category.items || category.items.length === 0) {
-        container.innerHTML = `
-          <div class="text-center py-10 bg-slate-800/30 rounded-xl border border-dashed border-slate-700">
-            <p class="text-slate-400 text-sm">ยังไม่มีรายการซ้อมในหัวข้อนี้</p>
-            <button onclick="openItemModal()" class="mt-2 text-xs text-orange-400 hover:underline">+ เพิ่มรายการซ้อมแรก</button>
-          </div>
-        `;
+        container.innerHTML = `<div class="text-center py-10 bg-slate-800/30 rounded-xl border border-dashed border-slate-700"><p class="text-slate-400 text-sm">ยังไม่มีรายการซ้อมในหัวข้อนี้</p></div>`;
         return;
       }
 
@@ -391,14 +406,11 @@
         const card = document.createElement('div');
         card.className = 'bg-slate-800/70 border border-slate-700 rounded-xl p-4 transition shadow-md hover:border-slate-600';
 
-        let detailsHTML = '';
-        if (detailLines.length > 0) {
-          detailsHTML = `
-            <div class="mt-3 pl-2 border-l-2 border-orange-500/50 space-y-1 text-sm text-slate-300">
-              ${detailLines.map(line => `<p class="leading-relaxed">${line}</p>`).join('')}
-            </div>
-          `;
-        }
+        let detailsHTML = detailLines.length > 0 ? `
+          <div class="mt-3 pl-2 border-l-2 border-orange-500/50 space-y-1 text-sm text-slate-300">
+            ${detailLines.map(line => `<p class="leading-relaxed">${line}</p>`).join('')}
+          </div>
+        ` : '';
 
         const amountBadge = item.amount ? `
           <span class="inline-flex items-center text-xs font-semibold text-orange-400 bg-orange-500/10 border border-orange-500/30 px-2.5 py-0.5 rounded-full">
@@ -423,26 +435,20 @@
       });
     }
 
-    // Modal Handlers for Category & Item
     function openCategoryModal(catId = null) {
       const modal = document.getElementById('category-modal');
-      const title = document.getElementById('cat-modal-title');
-      const inputId = document.getElementById('cat-id');
-      const inputTitle = document.getElementById('cat-title');
-
       if (catId) {
         const cat = categories.find(c => c.id === catId);
-        title.innerText = 'แก้ไขหัวข้อ';
-        inputId.value = cat.id;
-        inputTitle.value = cat.title;
+        document.getElementById('cat-modal-title').innerText = 'แก้ไขหัวข้อ';
+        document.getElementById('cat-id').value = cat.id;
+        document.getElementById('cat-title').value = cat.title;
       } else {
-        title.innerText = 'เพิ่มหัวข้อใหม่';
-        inputId.value = '';
-        inputTitle.value = '';
+        document.getElementById('cat-modal-title').innerText = 'เพิ่มหัวข้อใหม่';
+        document.getElementById('cat-id').value = '';
+        document.getElementById('cat-title').value = '';
       }
       modal.classList.remove('hidden');
     }
-
     function closeCategoryModal() { document.getElementById('category-modal').classList.add('hidden'); }
 
     function saveCategory(e) {
@@ -457,7 +463,6 @@
       } else {
         categories.push({ id: 'cat-' + Date.now(), title: title, items: [] });
       }
-
       saveData();
       closeCategoryModal();
       activeCategoryId ? showDetailView(activeCategoryId) : renderCategories();
@@ -473,32 +478,25 @@
 
     function openItemModal(itemId = null) {
       const modal = document.getElementById('item-modal');
-      const title = document.getElementById('item-modal-title');
-      const inputId = document.getElementById('item-id');
-      const inputTitle = document.getElementById('item-title');
-      const inputAmount = document.getElementById('item-amount');
-      const inputDetails = document.getElementById('item-details');
-
       const currentCat = categories.find(c => c.id === activeCategoryId);
       if (!currentCat) return;
 
       if (itemId) {
         const item = currentCat.items.find(i => i.id === itemId);
-        title.innerText = 'แก้ไขรายการซ้อม';
-        inputId.value = item.id;
-        inputTitle.value = item.title;
-        inputAmount.value = item.amount || '';
-        inputDetails.value = item.details || '';
+        document.getElementById('item-modal-title').innerText = 'แก้ไขรายการซ้อม';
+        document.getElementById('item-id').value = item.id;
+        document.getElementById('item-title').value = item.title;
+        document.getElementById('item-amount').value = item.amount || '';
+        document.getElementById('item-details').value = item.details || '';
       } else {
-        title.innerText = 'เพิ่มรายการซ้อม';
-        inputId.value = '';
-        inputTitle.value = '';
-        inputAmount.value = '';
-        inputDetails.value = '';
+        document.getElementById('item-modal-title').innerText = 'เพิ่มรายการซ้อม';
+        document.getElementById('item-id').value = '';
+        document.getElementById('item-title').value = '';
+        document.getElementById('item-amount').value = '';
+        document.getElementById('item-details').value = '';
       }
       modal.classList.remove('hidden');
     }
-
     function closeItemModal() { document.getElementById('item-modal').classList.add('hidden'); }
 
     function saveItem(e) {
@@ -518,7 +516,6 @@
         if (!currentCat.items) currentCat.items = [];
         currentCat.items.push({ id: 'item-' + Date.now(), title: title, amount: amount, details: details });
       }
-
       saveData();
       closeItemModal();
       showDetailView(activeCategoryId);
@@ -535,30 +532,30 @@
       }
     }
 
-    // --- SHOT STATS LOGIC ---
+    // --- RENDER SHOT STATS (คำนวณแยก 4 จุดอย่างชัดเจน) ---
     function renderShotStats() {
-      let totalAttempted = 0;
-      let totalMade = 0;
+      let stats = {
+        'ใต้แป้น / เลย์อัพ': { att: 0, made: 0 },
+        'ระยะกลาง': { att: 0, made: 0 },
+        'ยิง 3 คะแนน': { att: 0, made: 0 },
+        'ลูกโทษ': { att: 0, made: 0 }
+      };
 
       const historyContainer = document.getElementById('shot-history-list');
       historyContainer.innerHTML = '';
 
       if (shotStats.length === 0) {
-        historyContainer.innerHTML = `
-          <div class="text-center py-8 text-slate-500 text-sm">
-            ยังไม่มีข้อมูลสถิติการยิง กด "+ บันทึกสถิติใหม่" เพื่อเริ่มบันทึก
-          </div>
-        `;
+        historyContainer.innerHTML = `<div class="text-center py-8 text-slate-500 text-sm">ยังไม่มีข้อมูลสถิติการยิง</div>`;
       } else {
-        // เรียงจากวันที่ล่าสุดไปเก่าสุด
         shotStats.sort((a, b) => new Date(b.date) - new Date(a.date));
 
         shotStats.forEach(shot => {
-          totalAttempted += Number(shot.attempted);
-          totalMade += Number(shot.made);
+          if (stats[shot.location]) {
+            stats[shot.location].att += Number(shot.attempted);
+            stats[shot.location].made += Number(shot.made);
+          }
 
-          const pct = shot.attempted > 0 ? ((shot.made / shot.attempted) * 100).toFixed(1) : 0;
-          
+          const pct = shot.attempted > 0 ? ((shot.made / shot.attempted) * 100).toFixed(1) : '0.0';
           const item = document.createElement('div');
           item.className = 'bg-slate-800/80 border border-slate-700/70 rounded-xl p-3.5 flex items-center justify-between';
           
@@ -576,22 +573,26 @@
             <div class="flex items-center space-x-3">
               <div class="text-right">
                 <span class="text-lg font-bold ${pct >= 50 ? 'text-emerald-400' : 'text-amber-400'}">${pct}%</span>
-                <span class="block text-[10px] text-slate-500">แม่นยำ</span>
               </div>
-              <button onclick="deleteShotStat('${shot.id}')" class="text-slate-500 hover:text-red-400 p-1.5 transition">
-                <i class="fa-solid fa-trash-can text-xs"></i>
-              </button>
+              <button onclick="deleteShotStat('${shot.id}')" class="text-slate-500 hover:text-red-400 p-1.5 transition"><i class="fa-solid fa-trash-can text-xs"></i></button>
             </div>
           `;
           historyContainer.appendChild(item);
         });
       }
 
-      // Update Header Numbers
-      const avgPct = totalAttempted > 0 ? ((totalMade / totalAttempted) * 100).toFixed(1) : 0;
-      document.getElementById('stat-total-shots').innerText = totalAttempted;
-      document.getElementById('stat-total-made').innerText = totalMade;
-      document.getElementById('stat-avg-pct').innerText = avgPct + '%';
+      // อัปเดตข้อมูลการ์ดทั้ง 4 ใบ
+      updateCardUI('layup', stats['ใต้แป้น / เลย์อัพ']);
+      updateCardUI('mid', stats['ระยะกลาง']);
+      updateCardUI('3pt', stats['ยิง 3 คะแนน']);
+      updateCardUI('ft', stats['ลูกโทษ']);
+    }
+
+    function updateCardUI(key, data) {
+      const pct = data.att > 0 ? ((data.made / data.att) * 100).toFixed(1) : '0.0';
+      document.getElementById(`stat-made-${key}`).innerText = data.made;
+      document.getElementById(`stat-att-${key}`).innerText = data.att;
+      document.getElementById(`stat-pct-${key}`).innerText = pct + '%';
     }
 
     function openShotModal() {
@@ -601,9 +602,7 @@
       document.getElementById('shot-modal').classList.remove('hidden');
     }
 
-    function closeShotModal() {
-      document.getElementById('shot-modal').classList.add('hidden');
-    }
+    function closeShotModal() { document.getElementById('shot-modal').classList.add('hidden'); }
 
     function saveShotStat(e) {
       e.preventDefault();
@@ -617,15 +616,7 @@
         return;
       }
 
-      const newShot = {
-        id: 'shot-' + Date.now(),
-        date,
-        location,
-        attempted,
-        made
-      };
-
-      shotStats.push(newShot);
+      shotStats.push({ id: 'shot-' + Date.now(), date, location, attempted, made });
       saveShotData();
       closeShotModal();
       renderShotStats();
