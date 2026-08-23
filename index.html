@@ -121,7 +121,11 @@
         <input type="hidden" id="item-id">
         <div class="mb-4">
           <label class="block text-xs font-medium text-slate-400 mb-1">ชื่อท่า / หัวข้อย่อย</label>
-          <input type="text" id="item-title" required placeholder="เช่น ยืดเส้น, ยิงใต้แป้น" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 transition">
+          <input type="text" id="item-title" required placeholder="เช่น 1) ยืดเส้น, 2) ยิงใต้แป้น" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 transition">
+        </div>
+        <div class="mb-4">
+          <label class="block text-xs font-medium text-slate-400 mb-1">จำนวนที่ต้องทำ / เป้าหมาย</label>
+          <input type="text" id="item-amount" placeholder="เช่น 10 ลูก, 5 นาที, 3 เซต" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 transition">
         </div>
         <div class="mb-6">
           <label class="block text-xs font-medium text-slate-400 mb-1">รายละเอียดเพิ่มเติม (ขึ้นบรรทัดใหม่เพื่อแยกข้อ)</label>
@@ -137,7 +141,7 @@
 
   <!-- App Script Logic -->
   <script>
-    // ข้อมูลเริ่มต้นจากตัวอย่างในรูปที่ 1
+    // ข้อมูลเริ่มต้น
     const defaultData = [
       {
         id: 'cat-1',
@@ -146,11 +150,13 @@
           {
             id: 'item-1',
             title: '1) ยืดเส้น',
+            amount: '5 นาที',
             details: '-วิ่งเหมาะอยู่กับที่\n-วิ่งแตะตูด\n-วิ่งยกเข่าสูง'
           },
           {
             id: 'item-2',
             title: '2) ยิงใต้แป้น',
+            amount: '10 ลูก',
             details: '-ยิงใต้แป้น 10 ลูก'
           }
         ]
@@ -185,7 +191,6 @@
 
       document.getElementById('detail-title').innerText = cat.title;
       
-      // ตั้งค่าปุ่มแก้ไขและลบประจำหัวข้อหลัก
       document.getElementById('edit-cat-btn').onclick = () => openCategoryModal(cat.id);
       document.getElementById('delete-cat-btn').onclick = () => deleteCategory(cat.id);
 
@@ -249,7 +254,7 @@
         return;
       }
 
-      category.items.forEach((item, index) => {
+      category.items.forEach((item) => {
         const detailLines = item.details ? item.details.split('\n').filter(line => line.trim() !== '') : [];
         
         const card = document.createElement('div');
@@ -264,9 +269,19 @@
           `;
         }
 
+        // ป้ายแสดงจำนวนที่ต้องทำ
+        const amountBadge = item.amount ? `
+          <span class="inline-flex items-center text-xs font-semibold text-orange-400 bg-orange-500/10 border border-orange-500/30 px-2.5 py-0.5 rounded-full">
+            <i class="fa-solid fa-bullseye mr-1 text-[10px]"></i>${item.amount}
+          </span>
+        ` : '';
+
         card.innerHTML = `
-          <div class="flex items-start justify-between">
-            <h4 class="font-semibold text-white text-base">${item.title}</h4>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+              <h4 class="font-semibold text-white text-base">${item.title}</h4>
+              ${amountBadge}
+            </div>
             <div class="flex space-x-1 ml-2">
               <button onclick="openItemModal('${item.id}')" class="p-1.5 text-slate-400 hover:text-amber-400 transition" title="แก้ไข">
                 <i class="fa-solid fa-pen text-xs"></i>
@@ -314,11 +329,9 @@
       if (!title) return;
 
       if (id) {
-        // Edit
         const cat = categories.find(c => c.id === id);
         if (cat) cat.title = title;
       } else {
-        // Create
         const newCat = {
           id: 'cat-' + Date.now(),
           title: title,
@@ -351,6 +364,7 @@
       const title = document.getElementById('item-modal-title');
       const inputId = document.getElementById('item-id');
       const inputTitle = document.getElementById('item-title');
+      const inputAmount = document.getElementById('item-amount');
       const inputDetails = document.getElementById('item-details');
 
       const currentCat = categories.find(c => c.id === activeCategoryId);
@@ -361,11 +375,13 @@
         title.innerText = 'แก้ไขรายการซ้อม';
         inputId.value = item.id;
         inputTitle.value = item.title;
+        inputAmount.value = item.amount || '';
         inputDetails.value = item.details || '';
       } else {
         title.innerText = 'เพิ่มรายการซ้อม';
         inputId.value = '';
         inputTitle.value = '';
+        inputAmount.value = '';
         inputDetails.value = '';
       }
       modal.classList.remove('hidden');
@@ -379,23 +395,24 @@
       e.preventDefault();
       const id = document.getElementById('item-id').value;
       const title = document.getElementById('item-title').value.trim();
+      const amount = document.getElementById('item-amount').value.trim();
       const details = document.getElementById('item-details').value.trim();
 
       const currentCat = categories.find(c => c.id === activeCategoryId);
       if (!currentCat) return;
 
       if (id) {
-        // Edit
         const item = currentCat.items.find(i => i.id === id);
         if (item) {
           item.title = title;
+          item.amount = amount;
           item.details = details;
         }
       } else {
-        // Create
         const newItem = {
           id: 'item-' + Date.now(),
           title: title,
+          amount: amount,
           details: details
         };
         if (!currentCat.items) currentCat.items = [];
