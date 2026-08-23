@@ -9,7 +9,28 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  
+
+  <!-- ================= Firebase Integration ================= -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+<script>
+  // ตั้งค่าและเชื่อมต่อ Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyCzwqWjuoWXC-de5ulSHp_p-cA2H2nELdc",
+    authDomain: "applee-95265.firebaseapp.com",
+    databaseURL: "https://applee-95265-default-rtdb.firebaseio.com",
+    projectId: "applee-95265",
+    storageBucket: "applee-95265.firebasestorage.app",
+    messagingSenderId: "1090466028028",
+    appId: "1:1090466028028:web:67307d229c754fd7567a79",
+    measurementId: "G-CZ3CFN0C3Y"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+</script>
+<!-- ======================================================== -->
   <style>
     body {
       font-family: 'Kanit', sans-serif;
@@ -632,6 +653,16 @@
 
     // Initial Start
     showMainView();
+    // ดึงข้อมูลเก่าในเครื่องขึ้น Cloud อัตโนมัติ (ทำงานครั้งแรกครั้งเดียว)
+const oldSchedules = localStorage.getItem('basketball_schedules');
+const oldShots = localStorage.getItem('basketball_shot_stats');
+
+if (oldSchedules) {
+  db.ref('schedules').set(JSON.parse(oldSchedules));
+}
+if (oldShots) {
+  db.ref('shotStats').set(JSON.parse(oldShots));
+}
   </script>
 </body>
 </html>
