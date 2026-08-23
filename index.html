@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ตารางซ้อมบาสเกตบอล</title>
+  <!-- Google Fonts & Tailwind CSS -->
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    body {
+      font-family: 'Kanit', sans-serif;
+      background-color: #0f172a;
+      color: #f8fafc;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- Header / Navigation Bar -->
+  <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-10 shadow-lg">
+    <div class="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="showMainView()">
+        <div class="bg-orange-500 text-white p-2 rounded-xl shadow-md shadow-orange-500/30">
+          <i class="fa-solid font-bold text-xl fa-basketball"></i>
+        </div>
+        <h1 class="text-xl font-bold tracking-wide bg-gradient-to-r from-orange-400 to-amber-200 bg-clip-text text-transparent">
+          ตารางซ้อมบาส
+        </h1>
+      </div>
+      <button onclick="openCategoryModal()" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-xl font-medium text-sm transition flex items-center shadow-lg shadow-orange-500/20 active:scale-95">
+        <i class="fa-solid fa-plus mr-2"></i>เพิ่มหัวข้อใหม่
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="flex-grow max-w-4xl w-full mx-auto p-4 sm:p-6">
+
+    <!-- 1. หน้าแสดงรายการหัวข้อทั้งหมด (Category List View) -->
+    <section id="category-view" class="space-y-4">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-lg font-semibold text-slate-300">ตารางการซ้อมทั้งหมด</h2>
+        <span id="category-count" class="text-xs font-medium bg-slate-800 text-orange-400 px-3 py-1 rounded-full border border-slate-700">0 หัวข้อ</span>
+      </div>
+      
+      <div id="category-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- JS จะมาเติมตรงนี้ -->
+      </div>
+    </section>
+
+    <!-- 2. หน้าแสดงรายละเอียดหัวข้อที่เลือก (Detail View) -->
+    <section id="detail-view" class="hidden space-y-6">
+      <!-- Top Navigation & Action -->
+      <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+        <button onclick="showMainView()" class="text-slate-400 hover:text-white flex items-center text-sm font-medium transition">
+          <i class="fa-solid fa-arrow-left mr-2"></i>กลับหน้าหลัก
+        </button>
+        <div class="flex space-x-2">
+          <button id="edit-cat-btn" class="bg-slate-800 hover:bg-slate-700 text-amber-400 px-3 py-1.5 rounded-lg text-sm border border-slate-700 transition">
+            <i class="fa-solid fa-pen-to-square mr-1"></i>แก้ไขหัวข้อ
+          </button>
+          <button id="delete-cat-btn" class="bg-slate-800 hover:bg-red-500/20 text-red-400 hover:border-red-500/50 px-3 py-1.5 rounded-lg text-sm border border-slate-700 transition">
+            <i class="fa-solid fa-trash mr-1"></i>ลบ
+          </button>
+        </div>
+      </div>
+
+      <!-- Detail Header -->
+      <div class="bg-slate-800/60 backdrop-blur border border-slate-700/60 rounded-2xl p-6 shadow-xl relative overflow-hidden">
+        <div class="absolute -right-6 -bottom-6 text-slate-700/20 text-9xl pointer-events-none">
+          <i class="fa-solid fa-basketball"></i>
+        </div>
+        <h2 id="detail-title" class="text-2xl sm:text-3xl font-bold text-orange-400 mb-2">วันจันทร์</h2>
+        <p class="text-xs text-slate-400">กดที่หัวข้อย่อยเพื่อดูหรือแก้ไขรายละเอียดการซ้อม</p>
+      </div>
+
+      <!-- Items Section -->
+      <div>
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-md font-semibold text-slate-300">รายการท่าซ้อม / กิจกรรม</h3>
+          <button onclick="openItemModal()" class="bg-slate-800 hover:bg-orange-500 hover:text-white text-orange-400 border border-orange-500/30 px-3 py-1.5 rounded-xl text-sm font-medium transition flex items-center">
+            <i class="fa-solid fa-plus mr-1.5"></i>เพิ่มรายการซ้อม
+          </button>
+        </div>
+
+        <div id="item-list" class="space-y-3">
+          <!-- JS จะมาเติมตรงนี้ -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal สำหรับ เพิ่ม/แก้ไข หัวข้อหลัก (Category) -->
+  <div id="category-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-2xl p-6 shadow-2xl relative">
+      <h3 id="cat-modal-title" class="text-lg font-bold text-white mb-4">เพิ่มหัวข้อใหม่</h3>
+      <form id="category-form" onsubmit="saveCategory(event)">
+        <input type="hidden" id="cat-id">
+        <div class="mb-4">
+          <label class="block text-xs font-medium text-slate-400 mb-1">ชื่อหัวข้อ (เช่น วันจันทร์, การยิงประตู)</label>
+          <input type="text" id="cat-title" required placeholder="เช่น วันจันทร์" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 transition">
+        </div>
+        <div class="flex justify-end space-x-3">
+          <button type="button" onclick="closeCategoryModal()" class="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl text-sm font-medium hover:bg-slate-700 transition">ยกเลิก</button>
+          <button type="submit" class="px-4 py-2 bg-orange-500 text-white rounded-xl text-sm font-medium hover:bg-orange-600 transition shadow-lg shadow-orange-500/30">บันทึก</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal สำหรับ เพิ่ม/แก้ไข รายการย่อย (Item) -->
+  <div id="item-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-2xl p-6 shadow-2xl relative">
+      <h3 id="item-modal-title" class="text-lg font-bold text-white mb-4">เพิ่มรายการซ้อม</h3>
+      <form id="item-form" onsubmit="saveItem(event)">
+        <input type="hidden" id="item-id">
+        <div class="mb-4">
+          <label class="block text-xs font-medium text-slate-400 mb-1">ชื่อท่า / หัวข้อย่อย</label>
+          <input type="text" id="item-title" required placeholder="เช่น ยืดเส้น, ยิงใต้แป้น" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 transition">
+        </div>
+        <div class="mb-6">
+          <label class="block text-xs font-medium text-slate-400 mb-1">รายละเอียดเพิ่มเติม (ขึ้นบรรทัดใหม่เพื่อแยกข้อ)</label>
+          <textarea id="item-details" rows="4" placeholder="- วิ่งเหมาะอยู่กับที่&#10;- วิ่งแตะตูด&#10;- วิ่งยกเข่าสูง" class="w-full bg-slate-800 border border-slate-700 rounded-xl p-3 text-white focus:outline-none focus:border-orange-500 transition text-sm"></textarea>
+        </div>
+        <div class="flex justify-end space-x-3">
+          <button type="button" onclick="closeItemModal()" class="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl text-sm font-medium hover:bg-slate-700 transition">ยกเลิก</button>
+          <button type="submit" class="px-4 py-2 bg-orange-500 text-white rounded-xl text-sm font-medium hover:bg-orange-600 transition shadow-lg shadow-orange-500/30">บันทึก</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- App Script Logic -->
+  <script>
+    // ข้อมูลเริ่มต้นจากตัวอย่างในรูปที่ 1
+    const defaultData = [
+      {
+        id: 'cat-1',
+        title: 'วันจันทร์',
+        items: [
+          {
+            id: 'item-1',
+            title: '1) ยืดเส้น',
+            details: '-วิ่งเหมาะอยู่กับที่\n-วิ่งแตะตูด\n-วิ่งยกเข่าสูง'
+          },
+          {
+            id: 'item-2',
+            title: '2) ยิงใต้แป้น',
+            details: '-ยิงใต้แป้น 10 ลูก'
+          }
+        ]
+      }
+    ];
+
+    // โหลดข้อมูลจาก LocalStorage
+    let categories = JSON.parse(localStorage.getItem('basketball_schedules')) || defaultData;
+    let activeCategoryId = null;
+
+    // บันทึกลง LocalStorage
+    function saveData() {
+      localStorage.setItem('basketball_schedules', JSON.stringify(categories));
+    }
+
+    // แสดงหน้าหลัก
+    function showMainView() {
+      activeCategoryId = null;
+      document.getElementById('category-view').classList.remove('hidden');
+      document.getElementById('detail-view').classList.add('hidden');
+      renderCategories();
+    }
+
+    // แสดงหน้ารายละเอียด
+    function showDetailView(catId) {
+      activeCategoryId = catId;
+      const cat = categories.find(c => c.id === catId);
+      if (!cat) return;
+
+      document.getElementById('category-view').classList.add('hidden');
+      document.getElementById('detail-view').classList.remove('hidden');
+
+      document.getElementById('detail-title').innerText = cat.title;
+      
+      // ตั้งค่าปุ่มแก้ไขและลบประจำหัวข้อหลัก
+      document.getElementById('edit-cat-btn').onclick = () => openCategoryModal(cat.id);
+      document.getElementById('delete-cat-btn').onclick = () => deleteCategory(cat.id);
+
+      renderItems(cat);
+    }
+
+    // แสดงการ์ดหัวข้อทั้งหมด
+    function renderCategories() {
+      const container = document.getElementById('category-list');
+      const countLabel = document.getElementById('category-count');
+      container.innerHTML = '';
+      
+      countLabel.innerText = `${categories.length} หัวข้อ`;
+
+      if (categories.length === 0) {
+        container.innerHTML = `
+          <div class="col-span-full text-center py-12 bg-slate-800/30 rounded-2xl border border-dashed border-slate-700">
+            <i class="fa-solid fa-folder-open text-4xl text-slate-600 mb-3"></i>
+            <p class="text-slate-400">ยังไม่มีหัวข้อซ้อมบาส</p>
+            <button onclick="openCategoryModal()" class="mt-3 text-sm text-orange-400 hover:underline">+ เพิ่มหัวข้อแรก</button>
+          </div>
+        `;
+        return;
+      }
+
+      categories.forEach(cat => {
+        const itemCount = cat.items ? cat.items.length : 0;
+        const card = document.createElement('div');
+        card.className = 'bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 hover:border-orange-500/50 rounded-2xl p-5 cursor-pointer transition shadow-lg group flex flex-col justify-between';
+        card.onclick = () => showDetailView(cat.id);
+
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-semibold uppercase tracking-wider text-orange-400 bg-orange-500/10 px-2.5 py-1 rounded-md border border-orange-500/20">ตารางซ้อม</span>
+              <i class="fa-solid fa-chevron-right text-slate-500 group-hover:text-orange-400 group-hover:translate-x-1 transition"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2 group-hover:text-orange-300 transition">${cat.title}</h3>
+          </div>
+          <div class="mt-4 pt-3 border-t border-slate-700/50 flex justify-between items-center text-xs text-slate-400">
+            <span><i class="fa-solid fa-list-check mr-1.5 text-slate-500"></i>${itemCount} รายการซ้อม</span>
+            <span class="text-orange-400/80 font-medium group-hover:underline">ดูรายละเอียด</span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // แสดงรายการย่อยข้างในหัวข้อที่เลือก
+    function renderItems(category) {
+      const container = document.getElementById('item-list');
+      container.innerHTML = '';
+
+      if (!category.items || category.items.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-10 bg-slate-800/30 rounded-xl border border-dashed border-slate-700">
+            <p class="text-slate-400 text-sm">ยังไม่มีรายการซ้อมในหัวข้อนี้</p>
+            <button onclick="openItemModal()" class="mt-2 text-xs text-orange-400 hover:underline">+ เพิ่มรายการซ้อมแรก</button>
+          </div>
+        `;
+        return;
+      }
+
+      category.items.forEach((item, index) => {
+        const detailLines = item.details ? item.details.split('\n').filter(line => line.trim() !== '') : [];
+        
+        const card = document.createElement('div');
+        card.className = 'bg-slate-800/70 border border-slate-700 rounded-xl p-4 transition shadow-md hover:border-slate-600';
+
+        let detailsHTML = '';
+        if (detailLines.length > 0) {
+          detailsHTML = `
+            <div class="mt-3 pl-2 border-l-2 border-orange-500/50 space-y-1 text-sm text-slate-300">
+              ${detailLines.map(line => `<p class="leading-relaxed">${line}</p>`).join('')}
+            </div>
+          `;
+        }
+
+        card.innerHTML = `
+          <div class="flex items-start justify-between">
+            <h4 class="font-semibold text-white text-base">${item.title}</h4>
+            <div class="flex space-x-1 ml-2">
+              <button onclick="openItemModal('${item.id}')" class="p-1.5 text-slate-400 hover:text-amber-400 transition" title="แก้ไข">
+                <i class="fa-solid fa-pen text-xs"></i>
+              </button>
+              <button onclick="deleteItem('${item.id}')" class="p-1.5 text-slate-400 hover:text-red-400 transition" title="ลบ">
+                <i class="fa-solid fa-trash text-xs"></i>
+              </button>
+            </div>
+          </div>
+          ${detailsHTML}
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // --- Modal Handler for Category ---
+    function openCategoryModal(catId = null) {
+      const modal = document.getElementById('category-modal');
+      const title = document.getElementById('cat-modal-title');
+      const inputId = document.getElementById('cat-id');
+      const inputTitle = document.getElementById('cat-title');
+
+      if (catId) {
+        const cat = categories.find(c => c.id === catId);
+        title.innerText = 'แก้ไขหัวข้อ';
+        inputId.value = cat.id;
+        inputTitle.value = cat.title;
+      } else {
+        title.innerText = 'เพิ่มหัวข้อใหม่';
+        inputId.value = '';
+        inputTitle.value = '';
+      }
+      modal.classList.remove('hidden');
+    }
+
+    function closeCategoryModal() {
+      document.getElementById('category-modal').classList.add('hidden');
+    }
+
+    function saveCategory(e) {
+      e.preventDefault();
+      const id = document.getElementById('cat-id').value;
+      const title = document.getElementById('cat-title').value.trim();
+
+      if (!title) return;
+
+      if (id) {
+        // Edit
+        const cat = categories.find(c => c.id === id);
+        if (cat) cat.title = title;
+      } else {
+        // Create
+        const newCat = {
+          id: 'cat-' + Date.now(),
+          title: title,
+          items: []
+        };
+        categories.push(newCat);
+      }
+
+      saveData();
+      closeCategoryModal();
+
+      if (activeCategoryId) {
+        showDetailView(activeCategoryId);
+      } else {
+        renderCategories();
+      }
+    }
+
+    function deleteCategory(catId) {
+      if (confirm('คุณแน่ใจหรือไม่ว่าต้องการลบหัวข้อนี้พร้อมรายการซ้อมทั้งหมด?')) {
+        categories = categories.filter(c => c.id !== catId);
+        saveData();
+        showMainView();
+      }
+    }
+
+    // --- Modal Handler for Items ---
+    function openItemModal(itemId = null) {
+      const modal = document.getElementById('item-modal');
+      const title = document.getElementById('item-modal-title');
+      const inputId = document.getElementById('item-id');
+      const inputTitle = document.getElementById('item-title');
+      const inputDetails = document.getElementById('item-details');
+
+      const currentCat = categories.find(c => c.id === activeCategoryId);
+      if (!currentCat) return;
+
+      if (itemId) {
+        const item = currentCat.items.find(i => i.id === itemId);
+        title.innerText = 'แก้ไขรายการซ้อม';
+        inputId.value = item.id;
+        inputTitle.value = item.title;
+        inputDetails.value = item.details || '';
+      } else {
+        title.innerText = 'เพิ่มรายการซ้อม';
+        inputId.value = '';
+        inputTitle.value = '';
+        inputDetails.value = '';
+      }
+      modal.classList.remove('hidden');
+    }
+
+    function closeItemModal() {
+      document.getElementById('item-modal').classList.add('hidden');
+    }
+
+    function saveItem(e) {
+      e.preventDefault();
+      const id = document.getElementById('item-id').value;
+      const title = document.getElementById('item-title').value.trim();
+      const details = document.getElementById('item-details').value.trim();
+
+      const currentCat = categories.find(c => c.id === activeCategoryId);
+      if (!currentCat) return;
+
+      if (id) {
+        // Edit
+        const item = currentCat.items.find(i => i.id === id);
+        if (item) {
+          item.title = title;
+          item.details = details;
+        }
+      } else {
+        // Create
+        const newItem = {
+          id: 'item-' + Date.now(),
+          title: title,
+          details: details
+        };
+        if (!currentCat.items) currentCat.items = [];
+        currentCat.items.push(newItem);
+      }
+
+      saveData();
+      closeItemModal();
+      showDetailView(activeCategoryId);
+    }
+
+    function deleteItem(itemId) {
+      if (confirm('ต้องการลบรายการซ้อมนี้ใช่หรือไม่?')) {
+        const currentCat = categories.find(c => c.id === activeCategoryId);
+        if (currentCat) {
+          currentCat.items = currentCat.items.filter(i => i.id !== itemId);
+          saveData();
+          showDetailView(activeCategoryId);
+        }
+      }
+    }
+
+    // Initial Start
+    showMainView();
+  </script>
+</body>
+</html>
