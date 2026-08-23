@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ตารางซ้อมบาสเกตบอล</title>
+  <title>ตารางซ้อม & สถิติยิงบาสเกตบอล</title>
   <!-- Google Fonts & Tailwind CSS -->
   <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
@@ -22,80 +22,140 @@
 
   <!-- Header / Navigation Bar -->
   <header class="bg-slate-900 border-b border-slate-800 sticky top-0 z-10 shadow-lg">
-    <div class="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-      <div class="flex items-center space-x-3 cursor-pointer" onclick="showMainView()">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="switchNav('schedule')">
         <div class="bg-orange-500 text-white p-2 rounded-xl shadow-md shadow-orange-500/30">
           <i class="fa-solid font-bold text-xl fa-basketball"></i>
         </div>
         <h1 class="text-xl font-bold tracking-wide bg-gradient-to-r from-orange-400 to-amber-200 bg-clip-text text-transparent">
-          ตารางซ้อมบาส
+          บาสเกตบอล โน้ต
         </h1>
       </div>
-      <button onclick="openCategoryModal()" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-xl font-medium text-sm transition flex items-center shadow-lg shadow-orange-500/20 active:scale-95">
-        <i class="fa-solid fa-plus mr-2"></i>เพิ่มหัวข้อใหม่
-      </button>
+
+      <!-- Main Navigation Tabs -->
+      <div class="flex bg-slate-800 p-1 rounded-xl border border-slate-700/80">
+        <button id="nav-schedule-btn" onclick="switchNav('schedule')" class="px-3.5 py-1.5 rounded-lg text-sm font-medium transition bg-orange-500 text-white shadow">
+          <i class="fa-solid fa-calendar-days mr-1.5"></i>ตารางซ้อม
+        </button>
+        <button id="nav-stats-btn" onclick="switchNav('stats')" class="px-3.5 py-1.5 rounded-lg text-sm font-medium transition text-slate-400 hover:text-white">
+          <i class="fa-solid fa-chart-line mr-1.5"></i>สถิติการยิง
+        </button>
+      </div>
     </div>
   </header>
 
   <!-- Main Content Container -->
   <main class="flex-grow max-w-4xl w-full mx-auto p-4 sm:p-6">
 
-    <!-- 1. หน้าแสดงรายการหัวข้อทั้งหมด (Category List View) -->
-    <section id="category-view" class="space-y-4">
-      <div class="flex justify-between items-center mb-6">
-        <h2 class="text-lg font-semibold text-slate-300">ตารางการซ้อมทั้งหมด</h2>
-        <span id="category-count" class="text-xs font-medium bg-slate-800 text-orange-400 px-3 py-1 rounded-full border border-slate-700">0 หัวข้อ</span>
-      </div>
-      
-      <div id="category-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- JS จะมาเติมตรงนี้ -->
-      </div>
-    </section>
-
-    <!-- 2. หน้าแสดงรายละเอียดหัวข้อที่เลือก (Detail View) -->
-    <section id="detail-view" class="hidden space-y-6">
-      <!-- Top Navigation & Action -->
-      <div class="flex items-center justify-between border-b border-slate-800 pb-4">
-        <button onclick="showMainView()" class="text-slate-400 hover:text-white flex items-center text-sm font-medium transition">
-          <i class="fa-solid fa-arrow-left mr-2"></i>กลับหน้าหลัก
-        </button>
-        <div class="flex space-x-2">
-          <button id="edit-cat-btn" class="bg-slate-800 hover:bg-slate-700 text-amber-400 px-3 py-1.5 rounded-lg text-sm border border-slate-700 transition">
-            <i class="fa-solid fa-pen-to-square mr-1"></i>แก้ไขหัวข้อ
-          </button>
-          <button id="delete-cat-btn" class="bg-slate-800 hover:bg-red-500/20 text-red-400 hover:border-red-500/50 px-3 py-1.5 rounded-lg text-sm border border-slate-700 transition">
-            <i class="fa-solid fa-trash mr-1"></i>ลบ
-          </button>
-        </div>
-      </div>
-
-      <!-- Detail Header -->
-      <div class="bg-slate-800/60 backdrop-blur border border-slate-700/60 rounded-2xl p-6 shadow-xl relative overflow-hidden">
-        <div class="absolute -right-6 -bottom-6 text-slate-700/20 text-9xl pointer-events-none">
-          <i class="fa-solid fa-basketball"></i>
-        </div>
-        <h2 id="detail-title" class="text-2xl sm:text-3xl font-bold text-orange-400 mb-2">วันจันทร์</h2>
-        <p class="text-xs text-slate-400">กดที่หัวข้อย่อยเพื่อดูหรือแก้ไขรายละเอียดการซ้อม</p>
-      </div>
-
-      <!-- Items Section -->
-      <div>
+    <!-- ================= 1. SECTION: SCHEDULE (ตารางซ้อม) ================= -->
+    <div id="section-schedule" class="space-y-6">
+      <!-- 1.1 หน้าแสดงรายการหัวข้อทั้งหมด (Category List View) -->
+      <section id="category-view" class="space-y-4">
         <div class="flex justify-between items-center mb-4">
-          <h3 class="text-md font-semibold text-slate-300">รายการท่าซ้อม / กิจกรรม</h3>
-          <button onclick="openItemModal()" class="bg-slate-800 hover:bg-orange-500 hover:text-white text-orange-400 border border-orange-500/30 px-3 py-1.5 rounded-xl text-sm font-medium transition flex items-center">
-            <i class="fa-solid fa-plus mr-1.5"></i>เพิ่มรายการซ้อม
-          </button>
+          <h2 class="text-lg font-semibold text-slate-300">ตารางการซ้อมทั้งหมด</h2>
+          <div class="flex items-center space-x-2">
+            <span id="category-count" class="text-xs font-medium bg-slate-800 text-orange-400 px-3 py-1.5 rounded-full border border-slate-700">0 หัวข้อ</span>
+            <button onclick="openCategoryModal()" class="bg-orange-500 hover:bg-orange-600 text-white px-3 py-1.5 rounded-xl font-medium text-sm transition flex items-center shadow-md shadow-orange-500/20 active:scale-95">
+              <i class="fa-solid fa-plus mr-1.5"></i>เพิ่มหัวข้อ
+            </button>
+          </div>
         </div>
-
-        <div id="item-list" class="space-y-3">
+        
+        <div id="category-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <!-- JS จะมาเติมตรงนี้ -->
         </div>
+      </section>
+
+      <!-- 1.2 หน้าแสดงรายละเอียดหัวข้อที่เลือก (Detail View) -->
+      <section id="detail-view" class="hidden space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+          <button onclick="showMainView()" class="text-slate-400 hover:text-white flex items-center text-sm font-medium transition">
+            <i class="fa-solid fa-arrow-left mr-2"></i>กลับหน้าหลัก
+          </button>
+          <div class="flex space-x-2">
+            <button id="edit-cat-btn" class="bg-slate-800 hover:bg-slate-700 text-amber-400 px-3 py-1.5 rounded-lg text-sm border border-slate-700 transition">
+              <i class="fa-solid fa-pen-to-square mr-1"></i>แก้ไขหัวข้อ
+            </button>
+            <button id="delete-cat-btn" class="bg-slate-800 hover:bg-red-500/20 text-red-400 hover:border-red-500/50 px-3 py-1.5 rounded-lg text-sm border border-slate-700 transition">
+              <i class="fa-solid fa-trash mr-1"></i>ลบ
+            </button>
+          </div>
+        </div>
+
+        <div class="bg-slate-800/60 backdrop-blur border border-slate-700/60 rounded-2xl p-6 shadow-xl relative overflow-hidden">
+          <div class="absolute -right-6 -bottom-6 text-slate-700/20 text-9xl pointer-events-none">
+            <i class="fa-solid fa-basketball"></i>
+          </div>
+          <h2 id="detail-title" class="text-2xl sm:text-3xl font-bold text-orange-400 mb-2">วันจันทร์</h2>
+          <p class="text-xs text-slate-400">รายการซ้อมบาสประจำวันหรือหัวข้อที่เลือก</p>
+        </div>
+
+        <div>
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-md font-semibold text-slate-300">รายการท่าซ้อม / กิจกรรม</h3>
+            <button onclick="openItemModal()" class="bg-slate-800 hover:bg-orange-500 hover:text-white text-orange-400 border border-orange-500/30 px-3 py-1.5 rounded-xl text-sm font-medium transition flex items-center">
+              <i class="fa-solid fa-plus mr-1.5"></i>เพิ่มรายการซ้อม
+            </button>
+          </div>
+
+          <div id="item-list" class="space-y-3">
+            <!-- JS จะมาเติมตรงนี้ -->
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ================= 2. SECTION: SHOT STATISTICS (สถิติการยิง) ================= -->
+    <div id="section-stats" class="hidden space-y-6">
+      
+      <!-- Top Action & Overview Header -->
+      <div class="flex justify-between items-center">
+        <div>
+          <h2 class="text-xl font-bold text-white">บันทึกสถิติการยิงประตู</h2>
+          <p class="text-xs text-slate-400">เช็กความแม่นยำและติดตามพัฒนาการการยิงบาสของคุณ</p>
+        </div>
+        <button onclick="openShotModal()" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-xl font-medium text-sm transition flex items-center shadow-lg shadow-orange-500/20 active:scale-95">
+          <i class="fa-solid fa-plus-circle mr-2"></i>บันทึกสถิติใหม่
+        </button>
       </div>
-    </section>
+
+      <!-- Overview Cards -->
+      <div class="grid grid-cols-3 gap-3 sm:gap-4">
+        <div class="bg-slate-800/70 border border-slate-700 rounded-2xl p-4 text-center">
+          <p class="text-xs text-slate-400 mb-1">ยิงทั้งหมด</p>
+          <p id="stat-total-shots" class="text-2xl sm:text-3xl font-bold text-white">0</p>
+          <span class="text-[10px] text-slate-500">ลูก</span>
+        </div>
+        <div class="bg-slate-800/70 border border-slate-700 rounded-2xl p-4 text-center">
+          <p class="text-xs text-slate-400 mb-1">ยิงเข้า</p>
+          <p id="stat-total-made" class="text-2xl sm:text-3xl font-bold text-emerald-400">0</p>
+          <span class="text-[10px] text-slate-500">ลูก</span>
+        </div>
+        <div class="bg-slate-800/70 border border-slate-700 rounded-2xl p-4 text-center">
+          <p class="text-xs text-slate-400 mb-1">ความแม่นยำเฉลี่ย</p>
+          <p id="stat-avg-pct" class="text-2xl sm:text-3xl font-bold text-orange-400">0%</p>
+          <span class="text-[10px] text-slate-500">FG%</span>
+        </div>
+      </div>
+
+      <!-- Shot History Table/List -->
+      <div class="bg-slate-800/50 border border-slate-700/80 rounded-2xl p-4 sm:p-5">
+        <h3 class="text-md font-semibold text-slate-300 mb-4 flex items-center">
+          <i class="fa-solid fa-history mr-2 text-orange-400"></i>ประวัติการยิงย้อนหลัง
+        </h3>
+        
+        <div id="shot-history-list" class="space-y-3">
+          <!-- JS จะมาเติมรายการยิงที่บันทึกไว้ -->
+        </div>
+      </div>
+
+    </div>
 
   </main>
 
-  <!-- Modal สำหรับ เพิ่ม/แก้ไข หัวข้อหลัก (Category) -->
+  <!-- ================= MODALS ================= -->
+
+  <!-- Modal 1: เพิ่ม/แก้ไข หัวข้อหลัก (Category) -->
   <div id="category-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-2xl p-6 shadow-2xl relative">
       <h3 id="cat-modal-title" class="text-lg font-bold text-white mb-4">เพิ่มหัวข้อใหม่</h3>
@@ -113,7 +173,7 @@
     </div>
   </div>
 
-  <!-- Modal สำหรับ เพิ่ม/แก้ไข รายการย่อย (Item) -->
+  <!-- Modal 2: เพิ่ม/แก้ไข รายการย่อย (Item) -->
   <div id="item-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-2xl p-6 shadow-2xl relative">
       <h3 id="item-modal-title" class="text-lg font-bold text-white mb-4">เพิ่มรายการซ้อม</h3>
@@ -139,10 +199,50 @@
     </div>
   </div>
 
+  <!-- Modal 3: เพิ่ม/แก้ไข สถิติการยิง (Shot Stat) -->
+  <div id="shot-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-slate-900 border border-slate-800 w-full max-w-md rounded-2xl p-6 shadow-2xl relative">
+      <h3 class="text-lg font-bold text-white mb-4">บันทึกสถิติการยิง</h3>
+      <form id="shot-form" onsubmit="saveShotStat(event)">
+        
+        <div class="mb-4">
+          <label class="block text-xs font-medium text-slate-400 mb-1">วันที่ซ้อมยิง</label>
+          <input type="date" id="shot-date" required class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 transition">
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-xs font-medium text-slate-400 mb-1">ตำแหน่ง / ระยะที่ยิง</label>
+          <select id="shot-location" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 transition">
+            <option value="ใต้แป้น / เลย์อัพ">ใต้แป้น / เลย์อัพ (Under Rim)</option>
+            <option value="ระยะกลาง">ระยะกลาง (Mid-range)</option>
+            <option value="3 คะแนน">3 คะแนน (3-Pointers)</option>
+            <option value="ลูกโทษ">ลูกโทษ (Free Throws)</option>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 mb-6">
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">ยิงทั้งหมด (ลูก)</label>
+            <input type="number" id="shot-attempted" min="1" required placeholder="เช่น 20" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 transition">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">ยิงเข้า (ลูก)</label>
+            <input type="number" id="shot-made" min="0" required placeholder="เช่น 12" class="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-orange-500 transition">
+          </div>
+        </div>
+
+        <div class="flex justify-end space-x-3">
+          <button type="button" onclick="closeShotModal()" class="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl text-sm font-medium hover:bg-slate-700 transition">ยกเลิก</button>
+          <button type="submit" class="px-4 py-2 bg-orange-500 text-white rounded-xl text-sm font-medium hover:bg-orange-600 transition shadow-lg shadow-orange-500/30">บันทึกสถิติ</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- App Script Logic -->
   <script>
-    // ข้อมูลเริ่มต้น
-    const defaultData = [
+    // --- APP STATE & STORAGE ---
+    const defaultCategories = [
       {
         id: 'cat-1',
         title: 'วันจันทร์',
@@ -163,16 +263,53 @@
       }
     ];
 
-    // โหลดข้อมูลจาก LocalStorage
-    let categories = JSON.parse(localStorage.getItem('basketball_schedules')) || defaultData;
+    const defaultShots = [
+      {
+        id: 'shot-1',
+        date: new Date().toISOString().split('T')[0],
+        location: 'ระยะกลาง',
+        attempted: 20,
+        made: 12
+      }
+    ];
+
+    let categories = JSON.parse(localStorage.getItem('basketball_schedules')) || defaultCategories;
+    let shotStats = JSON.parse(localStorage.getItem('basketball_shot_stats')) || defaultShots;
     let activeCategoryId = null;
 
-    // บันทึกลง LocalStorage
     function saveData() {
       localStorage.setItem('basketball_schedules', JSON.stringify(categories));
     }
 
-    // แสดงหน้าหลัก
+    function saveShotData() {
+      localStorage.setItem('basketball_shot_stats', JSON.stringify(shotStats));
+    }
+
+    // --- NAVIGATION SWITCH ---
+    function switchNav(tab) {
+      const scheduleSec = document.getElementById('section-schedule');
+      const statsSec = document.getElementById('section-stats');
+      const scheduleBtn = document.getElementById('nav-schedule-btn');
+      const statsBtn = document.getElementById('nav-stats-btn');
+
+      if (tab === 'schedule') {
+        scheduleSec.classList.remove('hidden');
+        statsSec.classList.add('hidden');
+        
+        scheduleBtn.className = 'px-3.5 py-1.5 rounded-lg text-sm font-medium transition bg-orange-500 text-white shadow';
+        statsBtn.className = 'px-3.5 py-1.5 rounded-lg text-sm font-medium transition text-slate-400 hover:text-white';
+        showMainView();
+      } else {
+        scheduleSec.classList.add('hidden');
+        statsSec.classList.remove('hidden');
+
+        statsBtn.className = 'px-3.5 py-1.5 rounded-lg text-sm font-medium transition bg-orange-500 text-white shadow';
+        scheduleBtn.className = 'px-3.5 py-1.5 rounded-lg text-sm font-medium transition text-slate-400 hover:text-white';
+        renderShotStats();
+      }
+    }
+
+    // --- SCHEDULE LOGIC ---
     function showMainView() {
       activeCategoryId = null;
       document.getElementById('category-view').classList.remove('hidden');
@@ -180,7 +317,6 @@
       renderCategories();
     }
 
-    // แสดงหน้ารายละเอียด
     function showDetailView(catId) {
       activeCategoryId = catId;
       const cat = categories.find(c => c.id === catId);
@@ -190,19 +326,16 @@
       document.getElementById('detail-view').classList.remove('hidden');
 
       document.getElementById('detail-title').innerText = cat.title;
-      
       document.getElementById('edit-cat-btn').onclick = () => openCategoryModal(cat.id);
       document.getElementById('delete-cat-btn').onclick = () => deleteCategory(cat.id);
 
       renderItems(cat);
     }
 
-    // แสดงการ์ดหัวข้อทั้งหมด
     function renderCategories() {
       const container = document.getElementById('category-list');
       const countLabel = document.getElementById('category-count');
       container.innerHTML = '';
-      
       countLabel.innerText = `${categories.length} หัวข้อ`;
 
       if (categories.length === 0) {
@@ -239,7 +372,6 @@
       });
     }
 
-    // แสดงรายการย่อยข้างในหัวข้อที่เลือก
     function renderItems(category) {
       const container = document.getElementById('item-list');
       container.innerHTML = '';
@@ -256,7 +388,6 @@
 
       category.items.forEach((item) => {
         const detailLines = item.details ? item.details.split('\n').filter(line => line.trim() !== '') : [];
-        
         const card = document.createElement('div');
         card.className = 'bg-slate-800/70 border border-slate-700 rounded-xl p-4 transition shadow-md hover:border-slate-600';
 
@@ -269,7 +400,6 @@
           `;
         }
 
-        // ป้ายแสดงจำนวนที่ต้องทำ
         const amountBadge = item.amount ? `
           <span class="inline-flex items-center text-xs font-semibold text-orange-400 bg-orange-500/10 border border-orange-500/30 px-2.5 py-0.5 rounded-full">
             <i class="fa-solid fa-bullseye mr-1 text-[10px]"></i>${item.amount}
@@ -283,12 +413,8 @@
               ${amountBadge}
             </div>
             <div class="flex space-x-1 ml-2">
-              <button onclick="openItemModal('${item.id}')" class="p-1.5 text-slate-400 hover:text-amber-400 transition" title="แก้ไข">
-                <i class="fa-solid fa-pen text-xs"></i>
-              </button>
-              <button onclick="deleteItem('${item.id}')" class="p-1.5 text-slate-400 hover:text-red-400 transition" title="ลบ">
-                <i class="fa-solid fa-trash text-xs"></i>
-              </button>
+              <button onclick="openItemModal('${item.id}')" class="p-1.5 text-slate-400 hover:text-amber-400 transition"><i class="fa-solid fa-pen text-xs"></i></button>
+              <button onclick="deleteItem('${item.id}')" class="p-1.5 text-slate-400 hover:text-red-400 transition"><i class="fa-solid fa-trash text-xs"></i></button>
             </div>
           </div>
           ${detailsHTML}
@@ -297,7 +423,7 @@
       });
     }
 
-    // --- Modal Handler for Category ---
+    // Modal Handlers for Category & Item
     function openCategoryModal(catId = null) {
       const modal = document.getElementById('category-modal');
       const title = document.getElementById('cat-modal-title');
@@ -317,48 +443,34 @@
       modal.classList.remove('hidden');
     }
 
-    function closeCategoryModal() {
-      document.getElementById('category-modal').classList.add('hidden');
-    }
+    function closeCategoryModal() { document.getElementById('category-modal').classList.add('hidden'); }
 
     function saveCategory(e) {
       e.preventDefault();
       const id = document.getElementById('cat-id').value;
       const title = document.getElementById('cat-title').value.trim();
-
       if (!title) return;
 
       if (id) {
         const cat = categories.find(c => c.id === id);
         if (cat) cat.title = title;
       } else {
-        const newCat = {
-          id: 'cat-' + Date.now(),
-          title: title,
-          items: []
-        };
-        categories.push(newCat);
+        categories.push({ id: 'cat-' + Date.now(), title: title, items: [] });
       }
 
       saveData();
       closeCategoryModal();
-
-      if (activeCategoryId) {
-        showDetailView(activeCategoryId);
-      } else {
-        renderCategories();
-      }
+      activeCategoryId ? showDetailView(activeCategoryId) : renderCategories();
     }
 
     function deleteCategory(catId) {
-      if (confirm('คุณแน่ใจหรือไม่ว่าต้องการลบหัวข้อนี้พร้อมรายการซ้อมทั้งหมด?')) {
+      if (confirm('คุณแน่ใจหรือไม่ว่าต้องการลบหัวข้อนี้?')) {
         categories = categories.filter(c => c.id !== catId);
         saveData();
         showMainView();
       }
     }
 
-    // --- Modal Handler for Items ---
     function openItemModal(itemId = null) {
       const modal = document.getElementById('item-modal');
       const title = document.getElementById('item-modal-title');
@@ -387,9 +499,7 @@
       modal.classList.remove('hidden');
     }
 
-    function closeItemModal() {
-      document.getElementById('item-modal').classList.add('hidden');
-    }
+    function closeItemModal() { document.getElementById('item-modal').classList.add('hidden'); }
 
     function saveItem(e) {
       e.preventDefault();
@@ -403,20 +513,10 @@
 
       if (id) {
         const item = currentCat.items.find(i => i.id === id);
-        if (item) {
-          item.title = title;
-          item.amount = amount;
-          item.details = details;
-        }
+        if (item) { item.title = title; item.amount = amount; item.details = details; }
       } else {
-        const newItem = {
-          id: 'item-' + Date.now(),
-          title: title,
-          amount: amount,
-          details: details
-        };
         if (!currentCat.items) currentCat.items = [];
-        currentCat.items.push(newItem);
+        currentCat.items.push({ id: 'item-' + Date.now(), title: title, amount: amount, details: details });
       }
 
       saveData();
@@ -432,6 +532,110 @@
           saveData();
           showDetailView(activeCategoryId);
         }
+      }
+    }
+
+    // --- SHOT STATS LOGIC ---
+    function renderShotStats() {
+      let totalAttempted = 0;
+      let totalMade = 0;
+
+      const historyContainer = document.getElementById('shot-history-list');
+      historyContainer.innerHTML = '';
+
+      if (shotStats.length === 0) {
+        historyContainer.innerHTML = `
+          <div class="text-center py-8 text-slate-500 text-sm">
+            ยังไม่มีข้อมูลสถิติการยิง กด "+ บันทึกสถิติใหม่" เพื่อเริ่มบันทึก
+          </div>
+        `;
+      } else {
+        // เรียงจากวันที่ล่าสุดไปเก่าสุด
+        shotStats.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        shotStats.forEach(shot => {
+          totalAttempted += Number(shot.attempted);
+          totalMade += Number(shot.made);
+
+          const pct = shot.attempted > 0 ? ((shot.made / shot.attempted) * 100).toFixed(1) : 0;
+          
+          const item = document.createElement('div');
+          item.className = 'bg-slate-800/80 border border-slate-700/70 rounded-xl p-3.5 flex items-center justify-between';
+          
+          item.innerHTML = `
+            <div class="flex items-center space-x-3">
+              <div class="bg-orange-500/10 border border-orange-500/30 text-orange-400 p-2.5 rounded-xl text-center min-w-[55px]">
+                <span class="block text-xs text-slate-400 font-normal">${shot.date}</span>
+              </div>
+              <div>
+                <h4 class="font-semibold text-white text-sm sm:text-base">${shot.location}</h4>
+                <p class="text-xs text-slate-400">ยิงเข้า <span class="text-emerald-400 font-semibold">${shot.made}</span> จาก <span class="text-white font-semibold">${shot.attempted}</span> ลูก</p>
+              </div>
+            </div>
+            
+            <div class="flex items-center space-x-3">
+              <div class="text-right">
+                <span class="text-lg font-bold ${pct >= 50 ? 'text-emerald-400' : 'text-amber-400'}">${pct}%</span>
+                <span class="block text-[10px] text-slate-500">แม่นยำ</span>
+              </div>
+              <button onclick="deleteShotStat('${shot.id}')" class="text-slate-500 hover:text-red-400 p-1.5 transition">
+                <i class="fa-solid fa-trash-can text-xs"></i>
+              </button>
+            </div>
+          `;
+          historyContainer.appendChild(item);
+        });
+      }
+
+      // Update Header Numbers
+      const avgPct = totalAttempted > 0 ? ((totalMade / totalAttempted) * 100).toFixed(1) : 0;
+      document.getElementById('stat-total-shots').innerText = totalAttempted;
+      document.getElementById('stat-total-made').innerText = totalMade;
+      document.getElementById('stat-avg-pct').innerText = avgPct + '%';
+    }
+
+    function openShotModal() {
+      document.getElementById('shot-date').value = new Date().toISOString().split('T')[0];
+      document.getElementById('shot-attempted').value = '';
+      document.getElementById('shot-made').value = '';
+      document.getElementById('shot-modal').classList.remove('hidden');
+    }
+
+    function closeShotModal() {
+      document.getElementById('shot-modal').classList.add('hidden');
+    }
+
+    function saveShotStat(e) {
+      e.preventDefault();
+      const date = document.getElementById('shot-date').value;
+      const location = document.getElementById('shot-location').value;
+      const attempted = Number(document.getElementById('shot-attempted').value);
+      const made = Number(document.getElementById('shot-made').value);
+
+      if (made > attempted) {
+        alert('จำนวนลูกที่ยิงเข้า ต้องไม่มากกว่าจำนวนลูกที่ยิงทั้งหมดครับ');
+        return;
+      }
+
+      const newShot = {
+        id: 'shot-' + Date.now(),
+        date,
+        location,
+        attempted,
+        made
+      };
+
+      shotStats.push(newShot);
+      saveShotData();
+      closeShotModal();
+      renderShotStats();
+    }
+
+    function deleteShotStat(id) {
+      if (confirm('ต้องการลบประวัติการยิงนี้ใช่หรือไม่?')) {
+        shotStats = shotStats.filter(s => s.id !== id);
+        saveShotData();
+        renderShotStats();
       }
     }
 
