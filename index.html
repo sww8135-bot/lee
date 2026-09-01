@@ -26,7 +26,7 @@
             <p class="text-blue-200 text-sm md:text-base font-light">คู่มือการใช้งานคอมพิวเตอร์เบื้องต้นสำหรับบุคลากรและผู้สนใจ</p>
         </div>
 
-        <!-- ส่วนของฟอร์ม (ซ่อนได้เมื่อกดส่ง) -->
+        <!-- ส่วนของฟอร์ม -->
         <div id="form-container" class="p-6 md:p-8">
             <div class="bg-blue-50 border-l-4 border-blue-600 p-4 mb-8 rounded-r-lg">
                 <p class="text-sm text-blue-900 leading-relaxed">
@@ -34,7 +34,8 @@
                 </p>
             </div>
 
-            <form id="evaluation-form" onsubmit="handleFormSubmit(event)" class="space-y-8">
+            <!-- เปลี่ยน action เป็นลิงก์ Formspree ของคุณ และเพิ่ม onsubmit เพื่อแสดงหน้าจอขอบคุณ -->
+            <form action="https://formspree.io/f/myeyeolw" method="POST" onsubmit="handleFormSubmit(event)" class="space-y-8">
                 
                 <!-- ส่วนที่ 1: ข้อมูลทั่วไป -->
                 <div>
@@ -44,40 +45,40 @@
                     </h2>
                     
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                        <!-- คำนำหน้าชื่อ -->
                         <div>
                             <label class="block text-sm font-medium text-slate-700 mb-1">คำนำหน้าชื่อ</label>
-                            <select class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+                            <select name="prefix" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
                                 <option value="">-- เลือก --</option>
                                 <option value="นาย">นาย</option>
                                 <option value="นาง">นาง</option>
                                 <option value="นางสาว">นางสาว</option>
+                                <option value="ดร.">ดร.</option>
+                                <option value="อื่นๆ">อื่นๆ</option>
                             </select>
                         </div>
-                        <!-- ชื่อ - นามสกุล -->
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-slate-700 mb-1">ชื่อ - นามสกุล</label>
-                            <input type="text" placeholder="กรอกชื่อและนามสกุลของคุณ" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+                            <input type="text" name="fullname" placeholder="กรอกชื่อและนามสกุลของคุณ" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-slate-700 mb-1">สถานะของท่าน <span class="text-red-500">*</span></label>
-                            <select required class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+                            <select name="status" required class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
                                 <option value="">-- กรุณาเลือกสถานะ --</option>
-                                <option value="staff">บุคลากร / เจ้าหน้าที่ อบจ.</option>
-                                <option value="public">ประชาชนทั่วไป</option>
-                                <option value="other">อื่น ๆ</option>
+                                <option value="บุคลากร/เจ้าหน้าที่ อบจ.">บุคลากร / เจ้าหน้าที่ อบจ.</option>
+                                <option value="ประชาชนทั่วไป">ประชาชนทั่วไป</option>
+                                <option value="อื่นๆ">อื่น ๆ</option>
                             </select>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-slate-700 mb-1">ความถี่ในการใช้งานคอมพิวเตอร์</label>
-                            <select class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
+                            <select name="frequency" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition">
                                 <option value="">-- กรุณาเลือกความถี่ --</option>
-                                <option value="daily">ทุกวัน (ประจำ)</option>
-                                <option value="sometimes">สัปดาห์ละ 2-3 ครั้ง</option>
-                                <option value="rarely">นาน ๆ ครั้ง</option>
+                                <option value="ทุกวัน">ทุกวัน (ประจำ)</option>
+                                <option value="สัปดาห์ละ 2-3 ครั้ง">สัปดาห์ละ 2-3 ครั้ง</option>
+                                <option value="นานๆ ครั้ง">นาน ๆ ครั้ง</option>
                             </select>
                         </div>
                     </div>
@@ -107,35 +108,35 @@
                             <tbody class="divide-y divide-slate-100 text-sm">
                                 <tr class="hover:bg-slate-50/80 transition">
                                     <td class="p-3 font-normal text-slate-700">1. เนื้อหาของคู่มือมีความถูกต้อง ชัดเจน และเข้าใจง่าย</td>
-                                    <td class="p-3 text-center"><input type="radio" name="eval_1" value="5" required class="text-blue-600 focus:ring-blue-500"></td>
-                                    <td class="p-3 text-center"><input type="radio" name="eval_1" value="4" class="text-blue-600 focus:ring-blue-500"></td>
-                                    <td class="p-3 text-center"><input type="radio" name="eval_1" value="3" class="text-blue-600 focus:ring-blue-500"></td>
-                                    <td class="p-3 text-center"><input type="radio" name="eval_1" value="2" class="text-blue-600 focus:ring-blue-500"></td>
-                                    <td class="p-3 text-center"><input type="radio" name="eval_1" value="1" class="text-blue-600 focus:ring-blue-500"></td>
+                                    <td class="p-3 text-center"><input type="radio" name="eval_content" value="5" required class="text-blue-600 focus:ring-blue-500"></td>
+                                    <td class="p-3 text-center"><input type="radio" name="eval_content" value="4" class="text-blue-600 focus:ring-blue-500"></td>
+                                    <td class="p-3 text-center"><input type="radio" name="eval_content" value="3" class="text-blue-600 focus:ring-blue-500"></td>
+                                    <td class="p-3 text-center"><input type="radio" name="eval_content" value="2" class="text-blue-600 focus:ring-blue-500"></td>
+                                    <td class="p-3 text-center"><input type="radio" name="eval_content" value="1" class="text-blue-600 focus:ring-blue-500"></td>
                                 </tr>
                                 <tr class="hover:bg-slate-50/80 transition">
                                     <td class="p-3 font-normal text-slate-700">2. ขั้นตอนและภาพประกอบช่วยให้ปฏิบัติงานตามได้จริง</td>
-                                    <td class="p-3 text-center"><input type="radio" name="eval_2" value="5" required class="text-blue-600 focus:ring-blue-500"></td>
-                                    <td class="p-3 text-center"><input type="radio" name="eval_2" value="4" class="text-blue-600 focus:ring-blue-500"></td>
-                                    <td class="p-3 text-center"><input type="radio" name="eval_2" value="3" class="text-blue-600 focus:ring-blue-500"></td>
-                                    <td class="p-3 text-center"><input type="radio" name="eval_2" value="2" class="text-blue-600 focus:ring-blue-500"></td>
-                                    <td class="p-3 text-center"><input type="radio" name="eval_2" value="1" class="text-blue-600 focus:ring-blue-500"></td>
+                                    <td class="p-3 text-center"><input type="radio" name="eval_steps" value="5" required class="text-blue-600 focus:ring-blue-500"></td>
+                                    <td class="p-3 text-center"><input type="radio" name="eval_steps" value="4" class="text-blue-600 focus:ring-blue-500"></td>
+                                    <td class="p-3 text-center"><input type="radio" name="eval_steps" value="3" class="text-blue-600 focus:ring-blue-500"></td>
+                                    <td class="p-3 text-center"><input type="radio" name="eval_steps" value="2" class="text-blue-600 focus:ring-blue-500"></td>
+                                    <td class="p-3 text-center"><input type="radio" name="eval_steps" value="1" class="text-blue-600 focus:ring-blue-500"></td>
                                 </tr>
                                 <tr class="hover:bg-slate-50/80 transition">
                                     <td class="p-3 font-normal text-slate-700">3. รูปแบบหน้าตาเว็บไซต์ (UI) สวยงาม และเป็นระเบียบเรียบร้อย</td>
-                                    <td class="p-3 text-center"><input type="radio" name="eval_3" value="5" required class="text-blue-600 focus:ring-blue-500"></td>
-                                    <td class="p-3 text-center"><input type="radio" name="eval_3" value="4" class="text-blue-600 focus:ring-blue-500"></td>
-                                    <td class="p-3 text-center"><input type="radio" name="eval_3" value="3" class="text-blue-600 focus:ring-blue-500"></td>
-                                    <td class="p-3 text-center"><input type="radio" name="eval_3" value="2" class="text-blue-600 focus:ring-blue-500"></td>
-                                    <td class="p-3 text-center"><input type="radio" name="eval_3" value="1" class="text-blue-600 focus:ring-blue-500"></td>
+                                    <td class="p-3 text-center"><input type="radio" name="eval_design" value="5" required class="text-blue-600 focus:ring-blue-500"></td>
+                                    <td class="p-3 text-center"><input type="radio" name="eval_design" value="4" class="text-blue-600 focus:ring-blue-500"></td>
+                                    <td class="p-3 text-center"><input type="radio" name="eval_design" value="3" class="text-blue-600 focus:ring-blue-500"></td>
+                                    <td class="p-3 text-center"><input type="radio" name="eval_design" value="2" class="text-blue-600 focus:ring-blue-500"></td>
+                                    <td class="p-3 text-center"><input type="radio" name="eval_design" value="1" class="text-blue-600 focus:ring-blue-500"></td>
                                 </tr>
                                 <tr class="hover:bg-slate-50/80 transition">
                                     <td class="p-3 font-normal text-slate-700">4. การใช้งานเมนูและการค้นหาข้อมูลภายในเว็บมีความสะดวก รวดเร็ว</td>
-                                    <td class="p-3 text-center"><input type="radio" name="eval_4" value="5" required class="text-blue-600 focus:ring-blue-500"></td>
-                                    <td class="p-3 text-center"><input type="radio" name="eval_4" value="4" class="text-blue-600 focus:ring-blue-500"></td>
-                                    <td class="p-3 text-center"><input type="radio" name="eval_4" value="3" class="text-blue-600 focus:ring-blue-500"></td>
-                                    <td class="p-3 text-center"><input type="radio" name="eval_4" value="2" class="text-blue-600 focus:ring-blue-500"></td>
-                                    <td class="p-3 text-center"><input type="radio" name="eval_4" value="1" class="text-blue-600 focus:ring-blue-500"></td>
+                                    <td class="p-3 text-center"><input type="radio" name="eval_navigation" value="5" required class="text-blue-600 focus:ring-blue-500"></td>
+                                    <td class="p-3 text-center"><input type="radio" name="eval_navigation" value="4" class="text-blue-600 focus:ring-blue-500"></td>
+                                    <td class="p-3 text-center"><input type="radio" name="eval_navigation" value="3" class="text-blue-600 focus:ring-blue-500"></td>
+                                    <td class="p-3 text-center"><input type="radio" name="eval_navigation" value="2" class="text-blue-600 focus:ring-blue-500"></td>
+                                    <td class="p-3 text-center"><input type="radio" name="eval_navigation" value="1" class="text-blue-600 focus:ring-blue-500"></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -148,7 +149,7 @@
                         <span class="bg-blue-600 text-white w-6 h-6 rounded-full inline-flex items-center justify-center text-xs mr-2">3</span>
                         ข้อเสนอแนะเพิ่มเติม
                     </h2>
-                    <textarea rows="4" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition" placeholder="ระบุความคิดเห็นหรือข้อเสนอแนะเพิ่มเติมเพื่อการพัฒนาเว็บไซต์..."></textarea>
+                    <textarea name="suggestions" rows="4" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none transition" placeholder="ระบุความคิดเห็นหรือข้อเสนอแนะเพิ่มเติมเพื่อการพัฒนาเว็บไซต์..."></textarea>
                 </div>
 
                 <!-- ปุ่มส่งข้อมูล -->
@@ -168,7 +169,7 @@
             </div>
             <h2 class="text-2xl font-bold text-slate-900">ขอบคุณที่ตอบแบบสอบถามประเมิน</h2>
             <p class="text-slate-600 text-sm max-w-md mx-auto">
-                ข้อมูลและความคิดเห็นของท่านจะถูกนำไปใช้ในการพัฒนาและปรับปรุงคู่มือการใช้งานคอมพิวเตอร์เบื้องต้นให้ดียิ่งขึ้นต่อไป
+                ข้อมูลและความคิดเห็นของท่านถูกบันทึกเรียบร้อยแล้ว ขอบคุณที่ร่วมพัฒนาคู่มือการใช้งานคอมพิวเตอร์เบื้องต้น
             </p>
             <div class="pt-4">
                 <a href="#" onclick="location.reload();" class="inline-block bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium py-2 px-6 rounded-lg text-sm transition">
@@ -184,12 +185,34 @@
 
     </div>
 
+    <!-- Script สำหรับส่งข้อมูลไป Formspree แบบเบื้องหลัง พร้อมสลับหน้าจอ -->
     <script>
-        function handleFormSubmit(event) {
-            event.preventDefault();
-            document.getElementById('form-container').classList.add('hidden');
-            document.getElementById('thank-you-message').classList.remove('hidden');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+        async function handleFormSubmit(event) {
+            event.preventDefault(); // ป้องกันไม่ให้เว็บรีโหลดแบบปกติ
+            
+            const form = event.target;
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Accept': 'json'
+                    }
+                });
+
+                if (response.ok) {
+                    // ซ่อนฟอร์ม และแสดงหน้าจอขอบคุณ
+                    document.getElementById('form-container').classList.add('hidden');
+                    document.getElementById('thank-you-message').classList.remove('hidden');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    alert('เกิดข้อผิดพลาดในการส่งข้อมูล กรุณาลองใหม่อีกครั้ง');
+                }
+            } catch (error) {
+                alert('ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้');
+            }
         }
     </script>
 
